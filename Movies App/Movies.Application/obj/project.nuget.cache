@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "hjQkWzyloclac7M45SwyUfFpKKaEVghsof2QgucyfOa3oCGEGV1Wk71C7RUwDXh+tODHsRLejzCchmNbRxYpHw==",
+  "success": true,
+  "projectFilePath": "C:\\Developer\\Programming\\C#\\Movies App\\Movies.Application\\Movies.Application.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Andrei\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
