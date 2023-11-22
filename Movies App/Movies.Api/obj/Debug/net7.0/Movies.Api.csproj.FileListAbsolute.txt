@@ -36,3 +36,42 @@ C:\Developer\Programming\C#\Movies App\Movies.Api\obj\Debug\net7.0\refint\Movies
 C:\Developer\Programming\C#\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.pdb
 C:\Developer\Programming\C#\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.genruntimeconfig.cache
 C:\Developer\Programming\C#\Movies App\Movies.Api\obj\Debug\net7.0\ref\Movies.Api.dll
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\appsettings.Development.json
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\appsettings.json
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Movies.Api.exe
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Movies.Api.deps.json
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Movies.Api.runtimeconfig.json
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Movies.Api.dll
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Movies.Api.pdb
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Microsoft.AspNetCore.OpenApi.dll
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Microsoft.OpenApi.dll
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Movies.Application.dll
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Movies.Contracts.dll
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Movies.Application.pdb
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Movies.Contracts.pdb
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.csproj.AssemblyReference.cache
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.AssemblyInfoInputs.cache
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.AssemblyInfo.cs
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.csproj.CoreCompileInputs.cache
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.MvcApplicationPartsAssemblyInfo.cs
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.MvcApplicationPartsAssemblyInfo.cache
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.sourcelink.json
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\staticwebassets.build.json
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\staticwebassets.development.json
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\staticwebassets\msbuild.Movies.Api.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\staticwebassets\msbuild.build.Movies.Api.props
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\staticwebassets\msbuild.buildMultiTargeting.Movies.Api.props
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\staticwebassets\msbuild.buildTransitive.Movies.Api.props
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\staticwebassets.pack.json
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\scopedcss\bundle\Movies.Api.styles.css
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.csproj.CopyComplete
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.dll
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\refint\Movies.Api.dll
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.pdb
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.genruntimeconfig.cache
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\ref\Movies.Api.dll
