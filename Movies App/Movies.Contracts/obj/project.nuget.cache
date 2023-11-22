@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "6ESMiuXyRJ9k4QKnBlNAW+uB4mp/6moFnWlxDS1ri0jLo52Amr/yl6LKUzKju/yvv38e0+r5242/NlZrgEpsuw==",
+  "dgSpecHash": "90c6vMESmRBQGYkBPIiT3d8qzG6QODlXWk8JcXi3Ab3B35VAjBo4WeXjK58VMZ/n/Pd55IvFI9e4RlgfVbtAuQ==",
   "success": true,
-  "projectFilePath": "C:\\Developer\\Programming\\C#\\Movies App\\Movies.Contracts\\Movies.Contracts.csproj",
+  "projectFilePath": "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Contracts\\Movies.Contracts.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Developer\\Programming\\C#\\Movies App\\Movies.Application\\Movies.Application.csproj": {}
+    "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Application\\Movies.Application.csproj": {}
   },
   "projects": {
-    "C:\\Developer\\Programming\\C#\\Movies App\\Movies.Application\\Movies.Application.csproj": {
+    "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Application\\Movies.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Developer\\Programming\\C#\\Movies App\\Movies.Application\\Movies.Application.csproj",
+        "projectUniqueName": "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Application\\Movies.Application.csproj",
         "projectName": "Movies.Application",
-        "projectPath": "C:\\Developer\\Programming\\C#\\Movies App\\Movies.Application\\Movies.Application.csproj",
+        "projectPath": "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Application\\Movies.Application.csproj",
         "packagesPath": "C:\\Users\\Andrei\\.nuget\\packages\\",
-        "outputPath": "C:\\Developer\\Programming\\C#\\Movies App\\Movies.Application\\obj\\",
+        "outputPath": "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
