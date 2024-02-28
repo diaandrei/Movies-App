@@ -1,10 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "Xj/omVKxvsq3qQaDUoITNTWccPX9Fx1h74ZHbTtxzMsy3AMPf8SQrS1hoLTVnRMIgL+ZUdIJF0xPVHVfWdgqeg==",
+  "dgSpecHash": "LaXBzcZCpD5qPKMDVfdaWVEq9+FPmnK4CFIF/gb5yyY9+tyh5jQELjzIghFSLmfnrtkTzBRLrlNmnZWn+uFY/A==",
   "success": true,
   "projectFilePath": "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Application\\Movies.Application.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Andrei\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512"
+    "C:\\Users\\Andrei\\.nuget\\packages\\dapper\\2.1.24\\dapper.2.1.24.nupkg.sha512",
+    "C:\\Users\\Andrei\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Andrei\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\6.0.0\\microsoft.extensions.logging.abstractions.6.0.0.nupkg.sha512",
+    "C:\\Users\\Andrei\\.nuget\\packages\\npgsql\\7.0.6\\npgsql.7.0.6.nupkg.sha512"
   ],
   "logs": []
 }

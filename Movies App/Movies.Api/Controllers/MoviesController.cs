@@ -35,7 +35,7 @@ namespace Movies.Api.Controllers
             if (movie == null)
             {
                 return NotFound();
-            }
+            } 
 
             var response = movie.MapToResponse();
             return Ok(response);

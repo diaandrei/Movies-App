@@ -75,3 +75,5 @@ C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api
 C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.pdb
 C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\Movies.Api.genruntimeconfig.cache
 C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\obj\Debug\net7.0\ref\Movies.Api.dll
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Dapper.dll
+C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Api\bin\Debug\net7.0\Npgsql.dll
