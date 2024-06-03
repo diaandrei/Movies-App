@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Application\\Movies.Application.csproj": {}
+    "C:\\Developer\\Programming\\C#\\Movies App Github\\Movies App\\Movies.Application\\Movies.Application.csproj": {}
   },
   "projects": {
-    "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Application\\Movies.Application.csproj": {
+    "C:\\Developer\\Programming\\C#\\Movies App Github\\Movies App\\Movies.Application\\Movies.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Application\\Movies.Application.csproj",
+        "projectUniqueName": "C:\\Developer\\Programming\\C#\\Movies App Github\\Movies App\\Movies.Application\\Movies.Application.csproj",
         "projectName": "Movies.Application",
-        "projectPath": "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Application\\Movies.Application.csproj",
+        "projectPath": "C:\\Developer\\Programming\\C#\\Movies App Github\\Movies App\\Movies.Application\\Movies.Application.csproj",
         "packagesPath": "C:\\Users\\Andrei\\.nuget\\packages\\",
-        "outputPath": "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Application\\obj\\",
+        "outputPath": "C:\\Developer\\Programming\\C#\\Movies App Github\\Movies App\\Movies.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -39,6 +39,11 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -48,6 +53,10 @@
             "Dapper": {
               "target": "Package",
               "version": "[2.1.24, )"
+            },
+            "FluentValidation.DependencyInjectionExtensions": {
+              "target": "Package",
+              "version": "[11.9.1, )"
             },
             "Microsoft.Extensions.DependencyInjection.Abstractions": {
               "target": "Package",
@@ -74,7 +83,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.102\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204\\RuntimeIdentifierGraph.json"
         }
       }
     }

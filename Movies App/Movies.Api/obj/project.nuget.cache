@@ -1,10 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "H5y9cCHg6CMYwfTg0K1/tMbe36zbnf47jmRXFkdPoiM6KG08eSE8P8a4D6WpTdINSG2G3oqZTp/2iop+vpgjvw==",
+  "dgSpecHash": "dJA1cIt3p//HjTf7n1+FxDsvZAVG47WH8VGtjHUngh8pYBWrhOzLSpukdwkf9XZFl/fuR8bRn0kJG9uBESsFqQ==",
   "success": true,
-  "projectFilePath": "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Api\\Movies.Api.csproj",
+  "projectFilePath": "C:\\Developer\\Programming\\C#\\Movies App Github\\Movies App\\Movies.Api\\Movies.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Andrei\\.nuget\\packages\\dapper\\2.1.24\\dapper.2.1.24.nupkg.sha512",
+    "C:\\Users\\Andrei\\.nuget\\packages\\fluentvalidation\\11.9.1\\fluentvalidation.11.9.1.nupkg.sha512",
+    "C:\\Users\\Andrei\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\11.9.1\\fluentvalidation.dependencyinjectionextensions.11.9.1.nupkg.sha512",
     "C:\\Users\\Andrei\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.16\\microsoft.aspnetcore.openapi.7.0.16.nupkg.sha512",
     "C:\\Users\\Andrei\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
     "C:\\Users\\Andrei\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",

@@ -21,3 +21,15 @@ C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Con
 C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Contracts\obj\Debug\net7.0\refint\Movies.Contracts.dll
 C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Contracts\obj\Debug\net7.0\Movies.Contracts.pdb
 C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Contracts\obj\Debug\net7.0\ref\Movies.Contracts.dll
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Contracts\bin\Debug\net7.0\Movies.Contracts.deps.json
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Contracts\bin\Debug\net7.0\Movies.Contracts.dll
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Contracts\bin\Debug\net7.0\Movies.Contracts.pdb
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Contracts\obj\Debug\net7.0\Movies.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Contracts\obj\Debug\net7.0\Movies.Contracts.AssemblyInfoInputs.cache
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Contracts\obj\Debug\net7.0\Movies.Contracts.AssemblyInfo.cs
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Contracts\obj\Debug\net7.0\Movies.Contracts.csproj.CoreCompileInputs.cache
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Contracts\obj\Debug\net7.0\Movies.Contracts.sourcelink.json
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Contracts\obj\Debug\net7.0\Movies.Contracts.dll
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Contracts\obj\Debug\net7.0\refint\Movies.Contracts.dll
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Contracts\obj\Debug\net7.0\Movies.Contracts.pdb
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Contracts\obj\Debug\net7.0\ref\Movies.Contracts.dll

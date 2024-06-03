@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Contracts\\Movies.Contracts.csproj": {}
+    "C:\\Developer\\Programming\\C#\\Movies App Github\\Movies App\\Movies.Contracts\\Movies.Contracts.csproj": {}
   },
   "projects": {
-    "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Contracts\\Movies.Contracts.csproj": {
+    "C:\\Developer\\Programming\\C#\\Movies App Github\\Movies App\\Movies.Contracts\\Movies.Contracts.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Contracts\\Movies.Contracts.csproj",
+        "projectUniqueName": "C:\\Developer\\Programming\\C#\\Movies App Github\\Movies App\\Movies.Contracts\\Movies.Contracts.csproj",
         "projectName": "Movies.Contracts",
-        "projectPath": "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Contracts\\Movies.Contracts.csproj",
+        "projectPath": "C:\\Developer\\Programming\\C#\\Movies App Github\\Movies App\\Movies.Contracts\\Movies.Contracts.csproj",
         "packagesPath": "C:\\Users\\Andrei\\.nuget\\packages\\",
-        "outputPath": "C:\\Developer\\Programming\\C#\\Movies App Github\\MoviesAppApi\\Movies App\\Movies.Contracts\\obj\\",
+        "outputPath": "C:\\Developer\\Programming\\C#\\Movies App Github\\Movies App\\Movies.Contracts\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -39,6 +39,11 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -60,7 +65,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.102\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204\\RuntimeIdentifierGraph.json"
         }
       }
     }

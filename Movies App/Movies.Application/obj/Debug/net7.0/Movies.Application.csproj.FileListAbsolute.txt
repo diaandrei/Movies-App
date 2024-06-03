@@ -23,3 +23,16 @@ C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.App
 C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Application\obj\Debug\net7.0\refint\Movies.Application.dll
 C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Application\obj\Debug\net7.0\Movies.Application.pdb
 C:\Developer\Programming\C#\Movies App Github\MoviesAppApi\Movies App\Movies.Application\obj\Debug\net7.0\ref\Movies.Application.dll
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Application\bin\Debug\net7.0\Movies.Application.deps.json
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Application\bin\Debug\net7.0\Movies.Application.dll
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Application\bin\Debug\net7.0\Movies.Application.pdb
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Application\obj\Debug\net7.0\Movies.Application.csproj.AssemblyReference.cache
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Application\obj\Debug\net7.0\Movies.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Application\obj\Debug\net7.0\Movies.Application.AssemblyInfoInputs.cache
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Application\obj\Debug\net7.0\Movies.Application.AssemblyInfo.cs
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Application\obj\Debug\net7.0\Movies.Application.csproj.CoreCompileInputs.cache
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Application\obj\Debug\net7.0\Movies.Application.sourcelink.json
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Application\obj\Debug\net7.0\Movies.Application.dll
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Application\obj\Debug\net7.0\refint\Movies.Application.dll
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Application\obj\Debug\net7.0\Movies.Application.pdb
+C:\Developer\Programming\C#\Movies App Github\Movies App\Movies.Application\obj\Debug\net7.0\ref\Movies.Application.dll
