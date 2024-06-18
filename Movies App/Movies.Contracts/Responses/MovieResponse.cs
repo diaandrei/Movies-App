@@ -5,6 +5,8 @@
         public required Guid Id { get; set; }
         public required string Title { get; set; }
         public required string Slug { get; set; }
+        public float? Rating { get; init; }
+        public int? UserRating { get; init; }
         public required int YearOfRelease { get; set; }
         public required IEnumerable<string> Genres { get; init; } = Enumerable.Empty<string>();
     }
