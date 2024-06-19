@@ -4,7 +4,7 @@ namespace Movies.Application.Models
 {
     public partial class Movie
     {
-        public required Guid Id { get; set; }
+        public required Guid Id { get; init; }
         public required string Title { get; set; }
         public float? Rating { get; set; }
         public int? UserRating { get; set; }
