@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Movies.Application.Models;
 using Movies.Application.Repositories;
+using Movies.Application.Validators;
 
 namespace Movies.Application.Services
 {
@@ -9,12 +10,14 @@ namespace Movies.Application.Services
         private readonly IMovieRepository _movieRepository;
         private readonly IValidator<Movie> _movieValidator;
         private readonly IRatingRepository _ratingRepository;
+        private readonly IValidator<GetAllMoviesOptions> _optionsValidator;
 
-        public MovieService(IMovieRepository movieRepository, IValidator<Movie> movieValidator, IRatingRepository ratingRepository)
+        public MovieService(IMovieRepository movieRepository, IValidator<Movie> movieValidator, IRatingRepository ratingRepository, IValidator<GetAllMoviesOptions> optionsValidator)
         {
             _movieRepository = movieRepository;
             _movieValidator = movieValidator;
             _ratingRepository = ratingRepository;
+            _optionsValidator = optionsValidator;
         }
 
         public async Task<bool> CreateAsync(Movie movie, CancellationToken token = default)
@@ -33,9 +36,10 @@ namespace Movies.Application.Services
             return _movieRepository.GetBySlugAsync(slug, userId, token);
         }
 
-        public Task<IEnumerable<Movie>> GetAllAsync(Guid? userId = default, CancellationToken token = default)
+        public async Task<IEnumerable<Movie>> GetAllAsync(GetAllMoviesOptions options, CancellationToken token = default)
         {
-            return _movieRepository.GetAllAsync(userId, token);
+            await _optionsValidator.ValidateAndThrowAsync(options, token);
+            return await _movieRepository.GetAllAsync(options, token);
         }
 
         public async Task<Movie?> UpdateAsync(Movie movie, Guid? userId = default, CancellationToken token = default)
@@ -66,6 +70,11 @@ namespace Movies.Application.Services
         public Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
         {
             return _movieRepository.DeleteByIdAsync(id, token);
+        }
+
+        public Task<int> GetCountAsync(string? title, int? yearOfRelease, CancellationToken token = default)
+        {
+            return _movieRepository.GetCountAsync(title, yearOfRelease, token);
         }
     }
 }

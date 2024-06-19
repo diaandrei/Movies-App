@@ -31,11 +31,15 @@ namespace Movies.Api.Mapping
             };
         }
 
-        public static MoviesResponse MapToResponse(this IEnumerable<Movie> movies)
+        public static MoviesResponse MapToResponse(this IEnumerable<Movie> movies,
+            int page, int pageSize, int totalCount)
         {
             return new MoviesResponse
             {
-                Items = movies.Select(MapToResponse)
+                Items = movies.Select(MapToResponse),
+                Page = page,
+                PageSize = pageSize,
+                Total = totalCount
             };
         }
 
@@ -57,6 +61,24 @@ namespace Movies.Api.Mapping
                 Slug = x.Slug,
                 MovieId = x.MovieId
             });
+        }
+        public static GetAllMoviesOptions MapToOptions(this GetAllMoviesRequest request)
+        {
+            return new GetAllMoviesOptions
+            {
+                Title = request.Title,
+                YearOfRelease = request.Year,
+                SortField = request.SortBy?.Trim('+', '-'),
+                SortOrder = request.SortBy is null ? SortOrder.Unsorted :
+                    request.SortBy.StartsWith('-') ? SortOrder.Descending : SortOrder.Ascending,
+                Page = request.Page,
+                PageSize = request.PageSize
+            };
+        }
+        public static GetAllMoviesOptions WithUserId(this GetAllMoviesOptions options, Guid? userId)
+        {
+            options.UserId = userId;
+            return options;
         }
     }
 }
