@@ -36,6 +36,16 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwagger>();
 
+builder.Services.AddOutputCache(x =>
+{
+    x.AddBasePolicy(c => c.Cache());
+    x.AddPolicy("MovieCache", c =>
+        c.Cache()
+            .Expire(TimeSpan.FromMinutes(1))
+            .SetVaryByQuery(new[] { "title", "year", "sortBy", "page", "pageSize" })
+            .Tag("movies"));
+});
+
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks()
     .AddCheck<DatabaseHealthCheck>("Database");
@@ -60,6 +70,10 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+//app.UseCors();
+
+app.UseOutputCache();
 
 app.UseMiddleware<ValidationMappingMiddleware>();
 

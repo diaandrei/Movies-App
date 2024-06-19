@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Movies.Api.Auth;
 using Movies.Api.Mapping;
 using Movies.Application.Services;
@@ -12,10 +13,12 @@ namespace Movies.Api.Controllers
     public class MoviesController : ControllerBase
     {
         private readonly IMovieService _movieService;
+        private readonly IOutputCacheStore _outputCacheStore;
 
-        public MoviesController(IMovieService movieService)
+        public MoviesController(IMovieService movieService, IOutputCacheStore outputCacheStore)
         {
             _movieService = movieService;
+            _outputCacheStore = outputCacheStore;
         }
 
         [HttpPost(ApiEndpoints.Movies.Create)]
@@ -25,12 +28,14 @@ namespace Movies.Api.Controllers
             var movie = request.MapToMovie();
 
             await _movieService.CreateAsync(movie, token);
+            await _outputCacheStore.EvictByTagAsync("movies", token);
 
             return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, movie);
 
         }
 
         [HttpGet(ApiEndpoints.Movies.Get)]
+        [OutputCache(PolicyName = "MovieCache")]
         public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token)
         {
             var userId = HttpContext.GetUserId();
@@ -47,6 +52,7 @@ namespace Movies.Api.Controllers
         }
 
         [HttpGet(ApiEndpoints.Movies.GetAll)]
+        [OutputCache(PolicyName = "MovieCache")]
         public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request, CancellationToken token)
         {
             var userId = HttpContext.GetUserId();
@@ -68,7 +74,7 @@ namespace Movies.Api.Controllers
             {
                 return NotFound();
             }
-
+            await _outputCacheStore.EvictByTagAsync("movies", token);
             var response = updatedMovie.MapToResponse();
             return Ok(response);
         }
@@ -82,7 +88,7 @@ namespace Movies.Api.Controllers
             {
                 return NotFound();
             }
-
+            await _outputCacheStore.EvictByTagAsync("movies", token);
             return NoContent();
         }
 
