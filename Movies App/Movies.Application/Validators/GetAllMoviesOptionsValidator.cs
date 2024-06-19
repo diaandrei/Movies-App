@@ -17,6 +17,10 @@ namespace Movies.Application.Validators
             RuleFor(x => x.SortField)
                 .Must(x => x is null || AcceptableSortFields.Contains(x, StringComparer.OrdinalIgnoreCase))
                 .WithMessage("You can only sort by title or year of release");
+
+            RuleFor(x => x.Page)
+                .GreaterThanOrEqualTo(1)
+                .WithMessage("Page must be greater than or equal to 1");
         }
     }
 }
