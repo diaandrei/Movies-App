@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Movies.Application.Models;
 using Movies.Application.Repositories;
-using Movies.Application.Validators;
+
 
 namespace Movies.Application.Services
 {
@@ -11,17 +11,29 @@ namespace Movies.Application.Services
         private readonly IValidator<Movie> _movieValidator;
         private readonly IRatingRepository _ratingRepository;
         private readonly IValidator<GetAllMoviesOptions> _optionsValidator;
+        private readonly IOmdbService _omdbService;
 
-        public MovieService(IMovieRepository movieRepository, IValidator<Movie> movieValidator, IRatingRepository ratingRepository, IValidator<GetAllMoviesOptions> optionsValidator)
+        public MovieService(IMovieRepository movieRepository, IValidator<Movie> movieValidator, IRatingRepository ratingRepository, IValidator<GetAllMoviesOptions> optionsValidator, IOmdbService omdbService)
         {
             _movieRepository = movieRepository;
             _movieValidator = movieValidator;
             _ratingRepository = ratingRepository;
             _optionsValidator = optionsValidator;
+            _omdbService = omdbService;
         }
 
         public async Task<bool> CreateAsync(Movie movie, CancellationToken token = default)
         {
+            var omdbResponse = await _omdbService.GetMovieAsync(movie.Title, movie.YearOfRelease.ToString(), token);
+
+            if (movie is null)
+            {
+                throw new ValidationException("The movie is not recognised as an actual movie.");
+            }
+            //At this point you have a part populated movie entity AND a seperate OMDB movie
+            movie = movie.PopulateValuesFromOmdb(omdbResponse);
+            //Do something here to populate your movie entity with data from OMDB model, either with a mapper or whatever
+
             await _movieValidator.ValidateAndThrowAsync(movie, cancellationToken: token);
             return await _movieRepository.CreateAsync(movie, token);
         }

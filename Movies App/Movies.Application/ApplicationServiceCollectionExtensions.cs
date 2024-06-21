@@ -14,6 +14,7 @@ namespace Movies.Application
             services.AddSingleton<IRatingService, RatingService>();
             services.AddSingleton<IMovieRepository, MovieRepository>();
             services.AddSingleton<IMovieService, MovieService>();
+            services.AddSingleton<IOmdbService, OmdbService>();
             services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Singleton);
             return services;
         }
