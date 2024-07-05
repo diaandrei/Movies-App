@@ -29,7 +29,7 @@ namespace Movies.Application.Services
                 var omdbResponse = JsonSerializer.Deserialize<OmdbResponse>(content);
                 if (omdbResponse.Title is null)
                 {
-                    throw new ArgumentException("The movie does not exist");
+                    throw new ArgumentException("The movie does not exist.");
                 }
                 return omdbResponse;
             }

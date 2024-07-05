@@ -6,35 +6,35 @@ namespace Movies.Application.Repositories
 {
     public class RatingRepository : IRatingRepository
     {
-        private readonly MoviesDbContext _context;
+        private readonly MoviesDbContext _dbcontext;
 
-        public RatingRepository(MoviesDbContext context)
+        public RatingRepository(MoviesDbContext dbcontext)
         {
-            _context = context;
+            _dbcontext = dbcontext;
         }
 
         public async Task<bool> RateMovieAsync(Guid movieId, decimal rating, Guid userId, CancellationToken token = default)
         {
-            _context.MovieRatings.Add(new MovieRating
+            _dbcontext.MovieRatings.Add(new MovieRating
             {
                 MovieId = movieId,
                 Rating = rating,
                 UserId = userId
             });
-            return await _context.SaveChangesAsync(token) > 0;
+            return await _dbcontext.SaveChangesAsync(token) > 0;
         }
 
         public async Task<decimal> GetRatingAsync(Guid movieId, CancellationToken token = default) =>
-            await _context.MovieRatings.Where(x => x.MovieId == movieId).Select(x => x.Rating).AverageAsync(token);
+            await _dbcontext.MovieRatings.Where(x => x.MovieId == movieId).Select(x => x.Rating).AverageAsync(token);
 
         public async Task<MovieRating> GetRatingAsync(Guid movieId, Guid userId, CancellationToken token = default)
         {
-            var result = await _context.MovieRatings
+            var result = await _dbcontext.MovieRatings
                 .Where(x => x.MovieId == movieId && x.UserId == userId)
                 .Select(x => new { x.Rating, UserRating = (decimal)x.Rating })
                 .FirstOrDefaultAsync(token);
 
-            var averageRating = await _context.MovieRatings
+            var averageRating = await _dbcontext.MovieRatings
                 .Where(x => x.MovieId == movieId)
                 .AverageAsync(x => x.Rating, token);
 
@@ -48,15 +48,15 @@ namespace Movies.Application.Repositories
 
         public async Task<bool> DeleteRatingAsync(Guid movieId, Guid userId, CancellationToken token = default)
         {
-            var ratings = await _context.MovieRatings
+            var ratings = await _dbcontext.MovieRatings
                 .Where(x => x.MovieId == movieId && x.UserId == userId)
                 .ToListAsync(token);
 
-            _context.MovieRatings.RemoveRange(ratings);
-            return await _context.SaveChangesAsync(token) > 0;
+            _dbcontext.MovieRatings.RemoveRange(ratings);
+            return await _dbcontext.SaveChangesAsync(token) > 0;
         }
 
         public async Task<IEnumerable<MovieRating>> GetRatingsForUserAsync(Guid userId, CancellationToken token = default) =>
-            await _context.MovieRatings.Where(x => x.UserId == userId).ToListAsync(token);
+            await _dbcontext.MovieRatings.Where(x => x.UserId == userId).ToListAsync(token);
     }
 }

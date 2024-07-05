@@ -138,7 +138,7 @@ namespace Movies.Application
             return ratings.Select(x => new MovieRatingResponse
             {
                 Rating = (int)x.Rating,
-                MovieId = x.MovieId
+                MovieId = x.MovieId,
             });
         }
         public static GetAllMoviesOptions MapToOptions(this GetAllMoviesRequest request)

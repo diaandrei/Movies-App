@@ -26,15 +26,17 @@ namespace Movies.Application.Services
         {
             var omdbResponse = await _omdbService.GetMovieAsync(movie.Title, movie.YearOfRelease.ToString(), token);
 
-            if (movie is null)
+            if (omdbResponse == null || string.IsNullOrEmpty(omdbResponse.Title))
             {
-                throw new ValidationException("The movie is not recognised as an actual movie.");
+                throw new ValidationException("The movie does not exist.");
             }
-            movie = movie.PopulateValuesFromOmdb(omdbResponse);
 
+            movie = movie.PopulateValuesFromOmdb(omdbResponse);
             await _movieValidator.ValidateAndThrowAsync(movie, cancellationToken: token);
+
             return await _movieRepository.CreateAsync(movie, token);
         }
+
 
         public Task<Movie?> GetByIdAsync(Guid id, Guid? userId = default, CancellationToken token = default)
         {
