@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Movies.Application.Database;
 using Movies.Application.Repositories;
@@ -10,21 +11,15 @@ namespace Movies.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            services.AddSingleton<IRatingRepository, RatingRepository>();
-            services.AddSingleton<IRatingService, RatingService>();
-            services.AddSingleton<IMovieRepository, MovieRepository>();
-            services.AddSingleton<IMovieService, MovieService>();
-            services.AddSingleton<IOmdbService, OmdbService>();
-            services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Singleton);
-            return services;
-        }
+            services.AddDbContext<MoviesDbContext>(
+                options => options.UseSqlServer("Server=tcp:dev-data-server-andrei.database.windows.net,1433;Initial Catalog=movies;Persist Security Info=False;User ID=admin-sa;Password=6x2134013A;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
+            services.AddScoped<IRatingRepository, RatingRepository>();
+            services.AddScoped<IRatingService, RatingService>();
+            services.AddScoped<IMovieRepository, MovieRepository>();
+            services.AddScoped<IMovieService, MovieService>();
+            services.AddScoped<IOmdbService, OmdbService>();
+            services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Scoped);
 
-        public static IServiceCollection AddDatabase(this IServiceCollection services,
-            string connectionString)
-        {
-            services.AddSingleton<IDbConnectionFactory>(_ =>
-                new NpgsqlConnectionFactory(connectionString));
-            services.AddSingleton<DbInitializer>();
             return services;
         }
     }

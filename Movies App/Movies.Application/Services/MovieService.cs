@@ -30,9 +30,7 @@ namespace Movies.Application.Services
             {
                 throw new ValidationException("The movie is not recognised as an actual movie.");
             }
-            //At this point you have a part populated movie entity AND a seperate OMDB movie
             movie = movie.PopulateValuesFromOmdb(omdbResponse);
-            //Do something here to populate your movie entity with data from OMDB model, either with a mapper or whatever
 
             await _movieValidator.ValidateAndThrowAsync(movie, cancellationToken: token);
             return await _movieRepository.CreateAsync(movie, token);
@@ -41,11 +39,6 @@ namespace Movies.Application.Services
         public Task<Movie?> GetByIdAsync(Guid id, Guid? userId = default, CancellationToken token = default)
         {
             return _movieRepository.GetByIdAsync(id, userId, token);
-        }
-
-        public Task<Movie?> GetBySlugAsync(string slug, Guid? userId = default, CancellationToken token = default)
-        {
-            return _movieRepository.GetBySlugAsync(slug, userId, token);
         }
 
         public async Task<IEnumerable<Movie>> GetAllAsync(GetAllMoviesOptions options, CancellationToken token = default)
@@ -75,7 +68,7 @@ namespace Movies.Application.Services
 
             var ratings = await _ratingRepository.GetRatingAsync(movie.Id, userId.Value, token);
             movie.Rating = ratings.Rating;
-            movie.UserRating = ratings.UserRating;
+            movie.UserRating = ratings.Rating;
             return movie;
         }
 

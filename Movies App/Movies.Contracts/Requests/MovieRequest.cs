@@ -1,14 +1,17 @@
 ﻿using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
-namespace Movies.Contracts.Responses
+using Movies.Contracts.Responses;
+
+namespace Movies.Contracts.Requests
 {
-    public class MovieResponse
+    public class MovieRequest
     {
-        public required Guid Id { get; init; }
-        public required string Title { get; set; }
+        public int Id { get; init; }
+        public string Title { get; set; }
         public float? Rating { get; set; }
         public int? UserRating { get; set; }
-        public required int YearOfRelease { get; set; }
+        public int YearOfRelease { get; set; }
         public string Rated { get; set; }
         public string Released { get; set; }
         public string Runtime { get; set; }
@@ -27,6 +30,7 @@ namespace Movies.Contracts.Responses
         [JsonPropertyName("imdbVotes")]
         public string ImdbVotes { get; set; }
         public string TotalSeasons { get; set; }
-        public List<string> Genres { get; init; } = new();
+        public List<string> Genres { get; set; } = new();
+
     }
 }

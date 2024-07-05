@@ -2,13 +2,13 @@
 
 namespace Movies.Application.Models
 {
-    public class MovieRating
+    public class Favourite
     {
         [Key]
         public Guid Id { get; set; }
         public Guid MovieId { get; set; }
-        public decimal Rating { get; set; }
         public Guid UserId { get; set; }
+        public User User { get; set; }
         public virtual Movie Movie { get; set; }
     }
 }

@@ -1,78 +1,62 @@
-﻿using Dapper;
+﻿using Microsoft.EntityFrameworkCore;
 using Movies.Application.Database;
 using Movies.Application.Models;
 
-namespace Movies.Application.Repositories;
-
-public class RatingRepository : IRatingRepository
+namespace Movies.Application.Repositories
 {
-    private readonly IDbConnectionFactory _dbConnectionFactory;
-
-    public RatingRepository(IDbConnectionFactory dbConnectionFactory)
+    public class RatingRepository : IRatingRepository
     {
-        _dbConnectionFactory = dbConnectionFactory;
-    }
+        private readonly MoviesDbContext _context;
 
-    public async Task<bool> RateMovieAsync(Guid movieId, int rating, Guid userId, CancellationToken token = default)
-    {
-        using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
-        var result = await connection.ExecuteAsync(new CommandDefinition("""
-            insert into ratings(userid, movieid, rating) 
-            values (@userId, @movieId, @rating)
-            on conflict (userid, movieid) do update 
-                set rating = @rating
-            """, new { userId, movieId, rating }, cancellationToken: token));
+        public RatingRepository(MoviesDbContext context)
+        {
+            _context = context;
+        }
 
-        return result > 0;
-    }
+        public async Task<bool> RateMovieAsync(Guid movieId, decimal rating, Guid userId, CancellationToken token = default)
+        {
+            _context.MovieRatings.Add(new MovieRating
+            {
+                MovieId = movieId,
+                Rating = rating,
+                UserId = userId
+            });
+            return await _context.SaveChangesAsync(token) > 0;
+        }
 
-    public async Task<float?> GetRatingAsync(Guid movieId, CancellationToken token = default)
-    {
-        using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
-        return await connection.QuerySingleOrDefaultAsync<float?>(new CommandDefinition("""
-            select round(avg(r.rating), 1) from ratings r
-            where movieid = @movieId
-            """, new { movieId }, cancellationToken: token));
-    }
+        public async Task<decimal> GetRatingAsync(Guid movieId, CancellationToken token = default) =>
+            await _context.MovieRatings.Where(x => x.MovieId == movieId).Select(x => x.Rating).AverageAsync(token);
 
-    public async Task<(float? Rating, int? UserRating)> GetRatingAsync(Guid movieId, Guid userId, CancellationToken token = default)
-    {
-        using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
-        return await connection.QuerySingleOrDefaultAsync<(float?, int?)>(new CommandDefinition("""
-            select round(avg(rating), 1), 
-                   (select rating 
-                    from ratings 
-                    where movieid = @movieId 
-                      and userid = @userId
-                    limit 1) 
-            from ratings
-            where movieid = @movieId
-            """, new { movieId, userId }, cancellationToken: token));
-    }
+        public async Task<MovieRating> GetRatingAsync(Guid movieId, Guid userId, CancellationToken token = default)
+        {
+            var result = await _context.MovieRatings
+                .Where(x => x.MovieId == movieId && x.UserId == userId)
+                .Select(x => new { x.Rating, UserRating = (decimal)x.Rating })
+                .FirstOrDefaultAsync(token);
 
-    public async Task<bool> DeleteRatingAsync(Guid movieId, Guid userId, CancellationToken token = default)
-    {
-        using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
-        var result = await connection.ExecuteAsync(new CommandDefinition("""
-            delete from ratings
-            where movieid = @movieId
-            and userid = @userId
-            """, new { userId, movieId }, cancellationToken: token));
+            var averageRating = await _context.MovieRatings
+                .Where(x => x.MovieId == movieId)
+                .AverageAsync(x => x.Rating, token);
 
-        return result > 0;
-    }
+            return new MovieRating
+            {
+                MovieId = movieId,
+                Rating = result.Rating,
+                UserId = userId
+            };
+        }
 
-    public async Task<IEnumerable<MovieRating>> GetRatingsForUserAsync(Guid userId, CancellationToken token = default)
-    {
-        using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
-        return await connection.QueryAsync<MovieRating>(new CommandDefinition("""
-            select r.rating, r.movieid, m.slug
-            from ratings r
-            inner join movies m on r.movieid = m.id
-            where userid = @userId
-            """, new { userId }, cancellationToken: token));
+        public async Task<bool> DeleteRatingAsync(Guid movieId, Guid userId, CancellationToken token = default)
+        {
+            var ratings = await _context.MovieRatings
+                .Where(x => x.MovieId == movieId && x.UserId == userId)
+                .ToListAsync(token);
+
+            _context.MovieRatings.RemoveRange(ratings);
+            return await _context.SaveChangesAsync(token) > 0;
+        }
+
+        public async Task<IEnumerable<MovieRating>> GetRatingsForUserAsync(Guid userId, CancellationToken token = default) =>
+            await _context.MovieRatings.Where(x => x.UserId == userId).ToListAsync(token);
     }
 }
-
-
-
