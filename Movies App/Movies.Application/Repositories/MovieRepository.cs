@@ -17,7 +17,6 @@ public class MovieRepository : IMovieRepository
     {
         _dbContext.Movies.Add(movie);
         await _dbContext.SaveChangesAsync(token);
-
         return true;
     }
 
