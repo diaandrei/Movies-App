@@ -2,7 +2,10 @@
 {
     public class MovieRatingResponse
     {
-        public required Guid MovieId { get; init; }
-        public required int Rating { get; init; }
+        public Guid Id { get; set; }
+        public Guid MovieId { get; set; }
+        public decimal Rating { get; set; }
+        public Guid UserId { get; set; }
+        public virtual MovieResponse Movie { get; set; }
     }
 }

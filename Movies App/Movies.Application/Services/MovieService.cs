@@ -46,7 +46,7 @@ namespace Movies.Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while creating movie: {Title}", movie.Title);
-                throw new ApplicationException($"An error occurred while creating the movie '{movie.Title}'.", ex);
+                throw;
             }
         }
 
@@ -61,7 +61,7 @@ namespace Movies.Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while retrieving movie by ID: {Id}", id);
-                throw new ApplicationException($"An error occurred while retrieving the movie with ID '{id}'.", ex);
+                throw;
             }
         }
 
@@ -78,7 +78,7 @@ namespace Movies.Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while getting all movies.");
-                throw new ApplicationException("An error occurred while retrieving movies.", ex);
+                throw;
             }
         }
 
@@ -114,7 +114,7 @@ namespace Movies.Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while updating movie: {Title}", movie.Title);
-                throw new ApplicationException($"An error occurred while updating the movie '{movie.Title}'.", ex);
+                throw;
             }
         }
 
@@ -134,11 +134,11 @@ namespace Movies.Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while deleting movie by ID: {Id}", id);
-                throw new ApplicationException($"An error occurred while deleting the movie with ID '{id}'.", ex);
+                throw;
             }
         }
 
-        public async Task<int> GetCountAsync(string? title, int? yearOfRelease, CancellationToken token = default)
+        public async Task<int> GetCountAsync(string? title, string? yearOfRelease, CancellationToken token = default)
         {
             try
             {
@@ -149,7 +149,7 @@ namespace Movies.Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while getting the movie count.");
-                throw new ApplicationException("An error occurred while retrieving the movie count.", ex);
+                throw;
             }
         }
     }

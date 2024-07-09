@@ -13,9 +13,6 @@ namespace Movies.Application.Validators
 
         public GetAllMoviesOptionsValidator()
         {
-            RuleFor(x => x.YearOfRelease)
-                .LessThanOrEqualTo(DateTime.UtcNow.Year);
-
             RuleFor(x => x.SortField)
                 .Must(x => x is null || AcceptableSortFields.Contains(x.Value.ToString()))
                 .WithMessage("You can only sort by title or year of release");

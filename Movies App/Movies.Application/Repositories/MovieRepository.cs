@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Movies.Application.Database;
 using Movies.Application.Models;
 
@@ -32,7 +33,7 @@ public class MovieRepository : IMovieRepository
             query = query.Where(x => x.Title.Contains(options.Title));
         }
 
-        if (options.YearOfRelease.HasValue)
+        if (!string.IsNullOrEmpty(options.YearOfRelease))
         {
             query = query.Where(x => x.YearOfRelease == options.YearOfRelease);
         }
@@ -78,7 +79,7 @@ public class MovieRepository : IMovieRepository
         return movie != null;
     }
 
-    public async Task<int> GetCountAsync(string? title, int? yearOfRelease, CancellationToken token = default)
+    public async Task<int> GetCountAsync(string? title, string yearOfRelease, CancellationToken token = default)
     {
         var query = _dbContext.Movies.AsQueryable();
 
@@ -86,7 +87,7 @@ public class MovieRepository : IMovieRepository
         {
             query = query.Where(x => x.Title.Contains(title));
         }
-        if (yearOfRelease.HasValue)
+        if (!string.IsNullOrEmpty(yearOfRelease))
         {
             query = query.Where(x => x.YearOfRelease == yearOfRelease);
         }

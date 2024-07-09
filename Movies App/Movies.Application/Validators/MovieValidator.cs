@@ -25,8 +25,8 @@ namespace Movies.Application.Validators
                 .WithMessage("Title cannot be empty.");
 
             RuleFor(x => x.YearOfRelease)
-                .LessThanOrEqualTo(DateTime.UtcNow.Year)
-                .WithMessage("Year of release cannot be in the future.");
+                .NotEmpty()
+                .WithMessage("Year Of Release cannot be empty.");
 
             RuleFor(x => x)
                 .MustAsync(NotBeDuplicateMovieAsync)

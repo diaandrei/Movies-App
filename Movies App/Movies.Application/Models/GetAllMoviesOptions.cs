@@ -6,7 +6,7 @@ namespace Movies.Application.Models
     public class GetAllMoviesOptions
     {
         public string? Title { get; set; }
-        public int? YearOfRelease { get; set; }
+        public string? YearOfRelease { get; set; }
         public Guid? UserId { get; set; }
         public SortField? SortField { get; set; }
         public SortOrder? SortOrder { get; set; }

@@ -20,9 +20,9 @@ namespace Movies.Application
         {
             return new GenreResponse
             {
-                //Id = entity.Id,
-                //Name = entity.Name,
-                //CreatedAt = entity.CreatedAt
+                Id = entity.Id,
+                Name = entity.Name,
+                CreatedAt = entity.CreatedAt
             };
         }
 
@@ -32,29 +32,26 @@ namespace Movies.Application
             {
                 Id = Guid.NewGuid(),
                 Title = request.Title,
-                YearOfRelease = request.YearOfRelease,
-                //Genres = request.Genres.Select(ToEntity).ToList()
+                YearOfRelease = request.YearOfRelease
             };
         }
 
         public static Movie PopulateValuesFromOmdb(this Movie movie, OmdbResponse omdb)
         {
             movie.Title = omdb.Title;
-            movie.YearOfRelease = int.Parse(omdb.Year);
-            //movie.Genres = omdb.Genre.Split(',').ToList();
+            movie.YearOfRelease = omdb.Year;
             movie.Rated = omdb.Rated;
             movie.Released = omdb.Released;
             movie.Runtime = omdb.Runtime;
+            movie.OmdbRatings = omdb.Ratings.Select(x => new OmdbRating
+            {
+                Source = x.Source,
+                Value = x.Value
+            });
 
             movie.Plot = omdb.Plot;
             movie.Awards = omdb.Awards;
             movie.Poster = omdb.Poster;
-            //movie.Ratings = omdb.Ratings.Select(x => new OmdbRating
-            //{
-            //    Source = x.Source,
-            //    Value = x.Value
-            //}).ToList();
-
             movie.TotalSeasons = omdb.TotalSeasons;
 
             return movie;
@@ -66,28 +63,45 @@ namespace Movies.Application
             {
                 Id = movie.Id,
                 Title = movie.Title,
-                //Rating = movie.Rating,
-                //UserRating = movie.UserRating,
-                YearOfRelease = movie.YearOfRelease,
-                //Genres = movie.Genres.ToList(),
-                Rated = movie.Rated,
                 Released = movie.Released,
                 Runtime = movie.Runtime,
-                //Director = movie.Director,
-                //Writer = movie.Writer,
-                //Actors = movie.Actors,
+                YearOfRelease = movie.YearOfRelease,
+                Rated = movie.Rated,
                 Plot = movie.Plot,
                 Awards = movie.Awards,
                 Poster = movie.Poster,
-                //Ratings = movie.Ratings.Select(x => new OmdbRatingResponse
-                //{
-                //    Source = x.Source,
-                //    Value = x.Value
-                //}),
-                //Metascore = movie.Metascore,
-                //ImdbRating = movie.ImdbRating,
-                //ImdbVotes = movie.ImdbVotes,
                 TotalSeasons = movie.TotalSeasons,
+                IsActive = movie.IsActive,
+                Cast = movie.Cast.Select(x => new CastResponse
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Role = x.Role
+                }),
+                Genres = movie.Genres.Select(c => new GenreResponse
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                }),
+                ExternalRatings = movie.ExternalRatings.Select(x => new ExternalRatingResponse
+                {
+                    Source = x.Source,
+                    Rating = x.Rating
+                }),
+                OmdbRatings = movie.OmdbRatings.Select(x => new OmdbRatingResponse
+                {
+                    Source = x.Source,
+                    Value = x.Value
+                }),
+                MovieRatings = movie.MovieRatings.Select(x => new MovieRatingResponse
+                {
+                    Rating = x.Rating,
+                    MovieId = x.MovieId,
+                }),
+                Rating = movie.Rating,
+                UserRating = movie.UserRating,
+                CreatedAt = movie.CreatedAt,
+                UpdatedAt = movie.UpdatedAt
             };
         }
 
@@ -109,28 +123,44 @@ namespace Movies.Application
             {
                 Id = id,
                 Title = request.Title,
-                //Rating = request.Rating,
-                UserRating = request.UserRating,
-                YearOfRelease = request.YearOfRelease,
-                //Genres = request.Genres,
-                Rated = request.Rated,
                 Released = request.Released,
                 Runtime = request.Runtime,
-                //Director = request.Director,
-                //Writer = request.Writer,
-                //Actors = request.Actors,
+                YearOfRelease = request.YearOfRelease,
+                Rated = request.Rated,
                 Plot = request.Plot,
                 Awards = request.Awards,
                 Poster = request.Poster,
-                //Ratings = request.Ratings.Select(x => new OmdbRating
-                //{
-                //    Source = x.Source,
-                //    Value = x.Value
-                //}),
-                //Metascore = request.Metascore,
-                //ImdbRating = request.ImdbRating,
-                //ImdbVotes = request.ImdbVotes,
                 TotalSeasons = request.TotalSeasons,
+                Cast = request.Cast.Select(x => new Cast
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Role = x.Role
+                }),
+                Genres = request.Genres.Select(x => new Genre
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }),
+                ExternalRatings = request.ExternalRatings.Select(x => new ExternalRating
+                {
+                    Source = x.Source,
+                    Rating = x.Rating
+                }),
+                OmdbRatings = request.OmdbRatings.Select(x => new OmdbRating
+                {
+                    Source = x.Source,
+                    Value = x.Value
+                }),
+                MovieRatings = request.MovieRatings.Select(x => new MovieRating
+                {
+                    Rating = x.Rating,
+                    MovieId = x.MovieId
+                }),
+                Rating = request.Rating,
+                UserRating = request.UserRating,
+                CreatedAt = request.CreatedAt,
+                UpdatedAt = request.UpdatedAt
             };
         }
         public static IEnumerable<MovieRatingResponse> MapToResponse(this IEnumerable<MovieRating> ratings)
@@ -147,9 +177,9 @@ namespace Movies.Application
             {
                 Title = request.Title,
                 YearOfRelease = request.Year,
-                //SortField = request.SortBy?.Trim('+', '-'),
-                SortOrder = request.SortBy is null ? SortOrder.Unsorted :
-                    request.SortBy.StartsWith('-') ? SortOrder.Descending : SortOrder.Ascending,
+                SortOrder = request.SortBy == null ? SortOrder.Unsorted :
+                request.SortBy.StartsWith('-') ? SortOrder.Descending :
+                SortOrder.Ascending,
                 Page = request.Page,
                 PageSize = request.PageSize
             };

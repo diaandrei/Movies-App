@@ -1,6 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
-
 using Movies.Contracts.Responses;
 
 namespace Movies.Contracts.Requests
@@ -8,10 +6,10 @@ namespace Movies.Contracts.Requests
     public class MovieRequest
     {
         public int Id { get; init; }
-        public string Title { get; set; }
+        public required string Title { get; set; }
         public float? Rating { get; set; }
         public int? UserRating { get; set; }
-        public int YearOfRelease { get; set; }
+        public required string YearOfRelease { get; set; }
         public string Rated { get; set; }
         public string Released { get; set; }
         public string Runtime { get; set; }
