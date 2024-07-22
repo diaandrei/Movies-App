@@ -80,32 +80,32 @@ namespace Movies.Application
                 Poster = movie.Poster,
                 TotalSeasons = movie.TotalSeasons,
                 IsActive = movie.IsActive,
-                Cast = movie.Cast.Select(x => new CastResponse
+                Cast = movie.Cast?.Select(x => new CastResponse
                 {
                     Id = x.Id,
                     Name = x.Name,
                     Role = x.Role
-                }),
-                Genres = movie.Genres.Select(c => new GenreResponse
+                }).ToList() ?? Enumerable.Empty<CastResponse>(),
+                Genres = movie.Genres?.Select(c => new GenreResponse
                 {
                     Id = c.Id,
                     Name = c.Name,
-                }),
-                ExternalRatings = movie.ExternalRatings.Select(x => new ExternalRatingResponse
+                }).ToList() ?? Enumerable.Empty<GenreResponse>(),
+                ExternalRatings = movie.ExternalRatings?.Select(x => new ExternalRatingResponse
                 {
                     Source = x.Source,
                     Rating = x.Rating
-                }),
-                OmdbRatings = movie.OmdbRatings.Select(x => new OmdbRatingResponse
+                }).ToList() ?? Enumerable.Empty<ExternalRatingResponse>(),
+                OmdbRatings = movie.OmdbRatings?.Select(x => new OmdbRatingResponse
                 {
                     Source = x.Source,
                     Value = x.Value
-                }),
-                MovieRatings = movie.MovieRatings.Select(x => new MovieRatingResponse
+                }).ToList() ?? Enumerable.Empty<OmdbRatingResponse>(),
+                MovieRatings = movie.MovieRatings?.Select(x => new MovieRatingResponse
                 {
                     Rating = x.Rating,
                     MovieId = x.MovieId,
-                }),
+                }).ToList() ?? Enumerable.Empty<MovieRatingResponse>(),
                 Rating = movie.Rating,
                 UserRating = movie.UserRating,
                 CreatedAt = movie.CreatedAt,
