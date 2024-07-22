@@ -38,22 +38,30 @@ namespace Movies.Application
 
         public static Movie PopulateValuesFromOmdb(this Movie movie, OmdbResponse omdb)
         {
+            if (omdb == null)
+            {
+                throw new ArgumentNullException(nameof(omdb), "OMDb response cannot be null.");
+            }
             movie.Title = omdb.Title;
-            movie.YearOfRelease = omdb.Year;
-            movie.Rated = omdb.Rated;
             movie.Released = omdb.Released;
             movie.Runtime = omdb.Runtime;
-            movie.OmdbRatings = omdb.Ratings.Select(x => new OmdbRating
-            {
-                Source = x.Source,
-                Value = x.Value
-            });
-
+            movie.YearOfRelease = omdb.Year;
+            movie.Rated = omdb.Rated;
             movie.Plot = omdb.Plot;
             movie.Awards = omdb.Awards;
             movie.Poster = omdb.Poster;
             movie.TotalSeasons = omdb.TotalSeasons;
+            movie.IsActive = true;
+            movie.CreatedAt = DateTime.UtcNow;
+            movie.UpdatedAt = DateTime.UtcNow;
 
+            movie.OmdbRatings = omdb.Ratings != null
+                ? omdb.Ratings.Select(x => new OmdbRating
+                {
+                    Source = x.Source,
+                    Value = x.Value
+                }).ToList()
+                : new List<OmdbRating>();
             return movie;
         }
 
@@ -131,32 +139,6 @@ namespace Movies.Application
                 Awards = request.Awards,
                 Poster = request.Poster,
                 TotalSeasons = request.TotalSeasons,
-                Cast = request.Cast.Select(x => new Cast
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Role = x.Role
-                }),
-                Genres = request.Genres.Select(x => new Genre
-                {
-                    Id = x.Id,
-                    Name = x.Name
-                }),
-                ExternalRatings = request.ExternalRatings.Select(x => new ExternalRating
-                {
-                    Source = x.Source,
-                    Rating = x.Rating
-                }),
-                OmdbRatings = request.OmdbRatings.Select(x => new OmdbRating
-                {
-                    Source = x.Source,
-                    Value = x.Value
-                }),
-                MovieRatings = request.MovieRatings.Select(x => new MovieRating
-                {
-                    Rating = x.Rating,
-                    MovieId = x.MovieId
-                }),
                 Rating = request.Rating,
                 UserRating = request.UserRating,
                 CreatedAt = request.CreatedAt,
