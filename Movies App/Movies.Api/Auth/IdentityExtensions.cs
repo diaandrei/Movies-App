@@ -10,7 +10,6 @@
             {
                 return parseId;
             }
-
             return null;
         }
     }

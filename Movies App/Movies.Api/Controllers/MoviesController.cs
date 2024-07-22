@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Auth;
-using Movies.Api.Mapping;
+using Movies.Application;
 using Movies.Application.Services;
 using Movies.Contracts.Requests;
 
@@ -26,22 +26,15 @@ namespace Movies.Api.Controllers
 
             await _movieService.CreateAsync(movie, token);
 
-            return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, movie);
+            return CreatedAtAction(nameof(Get), new { id = movie.Id }, movie);
 
         }
 
         [HttpGet(ApiEndpoints.Movies.Get)]
-        public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token)
+        public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken token)
         {
             var userId = HttpContext.GetUserId();
-            var movie = Guid.TryParse(idOrSlug, out var id)
-                ? await _movieService.GetByIdAsync(id, userId, token)
-                : await _movieService.GetBySlugAsync(idOrSlug, userId, token);
-            if (movie == null)
-            {
-                return NotFound();
-            }
-
+            var movie = await _movieService.GetByIdAsync(id, userId, token);
             var response = movie.MapToResponse();
             return Ok(response);
         }

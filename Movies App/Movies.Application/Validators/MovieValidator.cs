@@ -1,39 +1,53 @@
 ﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
+using Movies.Application.Database;
 using Movies.Application.Models;
-using Movies.Application.Repositories;
+using Movies.Application.Services;
 
 namespace Movies.Application.Validators
 {
     public class MovieValidator : AbstractValidator<Movie>
     {
-        private readonly IMovieRepository _movieRepository;
-        public MovieValidator(IMovieRepository movieRepository)
-        {
-            _movieRepository = movieRepository;
-            RuleFor(x => x.Id)
-                .NotEmpty();
-            RuleFor(x => x.Genres)
-                .NotEmpty();
-            RuleFor(x => x.Title)
-                .NotEmpty();
-            RuleFor(x => x.YearOfRelease)
-                .LessThanOrEqualTo(DateTime.UtcNow.Year);
+        private readonly MoviesDbContext _dbContext;
+        private readonly IOmdbService _omdbService;
 
-            RuleFor(x => x.Slug)
-                .MustAsync(ValidateSlug)
-                .WithMessage("This movie already exists in the system.");
+        public MovieValidator(MoviesDbContext dbContext, IOmdbService omdbService)
+        {
+            _dbContext = dbContext;
+            _omdbService = omdbService;
+
+            RuleFor(x => x.Id)
+                .NotEmpty()
+                .WithMessage("Movie ID cannot be empty.");
+
+            RuleFor(x => x.Title)
+                .NotEmpty()
+                .WithMessage("Title cannot be empty.");
+
+            RuleFor(x => x.YearOfRelease)
+                .NotEmpty()
+                .WithMessage("Year Of Release cannot be empty.");
+
+            RuleFor(x => x)
+                .MustAsync(NotBeDuplicateMovieAsync)
+                .WithMessage("This movie already exists.");
+
+            RuleFor(x => x.Title)
+                .MustAsync(BeAValidMovieAsync)
+                .WithMessage("The movie does not exist.");
         }
 
-        private async Task<bool> ValidateSlug(Movie movie, string slug, CancellationToken token)
+        private async Task<bool> NotBeDuplicateMovieAsync(Movie movie, CancellationToken token)
         {
-            var existingMovie = await _movieRepository.GetBySlugAsync(slug);
+            var existingMovie = await _dbContext.Movies
+                .FirstOrDefaultAsync(m => m.Title == movie.Title && m.YearOfRelease == movie.YearOfRelease, token);
+            return existingMovie == null || existingMovie.Id == movie.Id;
+        }
 
-            if (existingMovie is not null)
-            {
-                return existingMovie.Id == movie.Id;
-            }
-
-            return existingMovie is null;
+        private async Task<bool> BeAValidMovieAsync(string title, CancellationToken token)
+        {
+            var omdbResponse = await _omdbService.GetMovieAsync(title, string.Empty, token);
+            return omdbResponse != null && !string.IsNullOrEmpty(omdbResponse.Title);
         }
     }
 }

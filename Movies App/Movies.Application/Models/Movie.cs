@@ -1,26 +1,29 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Movies.Application.Models
 {
-    public partial class Movie
+    public class Movie
     {
-        public required Guid Id { get; init; }
-        public required string Title { get; set; }
-        public float? Rating { get; set; }
-        public int? UserRating { get; set; }
-        public string Slug => GenerateSlug();
-        public required int YearOfRelease { get; set; }
-        public List<string> Genres { get; init; } = new();
-
-        private string GenerateSlug()
-        {
-            var sluggedTitle = SlugRegex().Replace(Title, string.Empty)
-                .ToLower().Replace(" ", "-");
-            return $"{sluggedTitle}-{YearOfRelease}";
-        }
-
-        [GeneratedRegex("[^0-9A-Za-z _-]", RegexOptions.NonBacktracking, 5)]
-        private static partial Regex SlugRegex();
-
+        [Key]
+        public Guid Id { get; set; }
+        public string Title { get; set; }
+        public string Released { get; set; }
+        public string Runtime { get; set; }
+        public string YearOfRelease { get; set; }
+        public string Rated { get; set; }
+        public string Plot { get; set; }
+        public string Awards { get; set; }
+        public string Poster { get; set; }
+        public string? TotalSeasons { get; set; }
+        public bool IsActive { get; set; }
+        public IEnumerable<Cast> Cast { get; set; }
+        public IEnumerable<Genre> Genres { get; set; }
+        public IEnumerable<ExternalRating> ExternalRatings { get; set; }
+        public virtual IEnumerable<OmdbRating> OmdbRatings { get; set; }
+        public virtual IEnumerable<MovieRating> MovieRatings { get; set; }
+        public decimal? Rating { get; set; }
+        public decimal? UserRating { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }

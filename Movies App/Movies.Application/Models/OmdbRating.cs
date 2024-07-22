@@ -2,13 +2,14 @@
 
 namespace Movies.Application.Models
 {
-    public class MovieRating
+    public class OmdbRating
     {
         [Key]
         public Guid Id { get; set; }
-        public Guid MovieId { get; set; }
-        public decimal Rating { get; set; }
-        public Guid UserId { get; set; }
+        public int MovieId { get; set; }
+        public string Source { get; set; }
+        public string Value { get; set; }
+
         public virtual Movie Movie { get; set; }
     }
 }
