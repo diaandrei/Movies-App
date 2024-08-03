@@ -13,13 +13,18 @@
         public string Poster { get; set; }
         public string? TotalSeasons { get; set; }
         public bool IsActive { get; set; }
-        public IEnumerable<CastResponse> Cast { get; set; }
-        public IEnumerable<GenreResponse> Genres { get; init; } = Enumerable.Empty<GenreResponse>();
-        public IEnumerable<ExternalRatingResponse> ExternalRatings { get; set; }
-        public IEnumerable<OmdbRatingResponse> OmdbRatings { get; set; } = Enumerable.Empty<OmdbRatingResponse>();
-        public IEnumerable<MovieRatingResponse> MovieRatings { get; set; }
+        public List<CastResponse> Cast { get; set; }
+        public List<GenreResponse> Genres { get; set; }
+        public List<ExternalRatingResponse> ExternalRatings { get; set; }
+        public List<OmdbRatingResponse> OmdbRatings { get; set; }
+        public List<MovieRatingResponse> MovieRatings { get; set; }
+        public List<UserWatchlistResponse> UserWatchlists { get; set; } = new List<UserWatchlistResponse>();
         public decimal? Rating { get; set; }
+        public bool IsUserRated { get; set; }
+        public Guid UserWatchlistId { get; set; }
+        public bool IsMovieWatchlist { get; set; }
         public decimal? UserRating { get; set; }
+        public string FirstAddedToWatchlistAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

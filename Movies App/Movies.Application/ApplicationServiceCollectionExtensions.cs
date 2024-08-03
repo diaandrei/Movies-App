@@ -16,7 +16,9 @@ namespace Movies.Application
             services.AddScoped<IRatingRepository, RatingRepository>();
             services.AddScoped<IRatingService, RatingService>();
             services.AddScoped<IMovieRepository, MovieRepository>();
+            services.AddScoped<IUserWatchlistRepository, UserWatchlistRepository>();
             services.AddScoped<IMovieService, MovieService>();
+            services.AddScoped<IUserWatchlistService, UserWatchlistService>();
             services.AddScoped<IOmdbService, OmdbService>();
             services.AddScoped<IGenreRepository, GenreRepository>();
             services.AddScoped<ICastRepository, CastRepository>();

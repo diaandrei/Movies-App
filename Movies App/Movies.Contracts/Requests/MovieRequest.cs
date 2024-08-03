@@ -29,6 +29,5 @@ namespace Movies.Contracts.Requests
         public string ImdbVotes { get; set; }
         public string TotalSeasons { get; set; }
         public List<string> Genres { get; set; } = new();
-
     }
 }

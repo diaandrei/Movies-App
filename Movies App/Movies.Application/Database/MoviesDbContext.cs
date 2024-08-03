@@ -1,15 +1,23 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Movies.Application.Models;
 
 namespace Movies.Application.Database
 {
-    public class MoviesDbContext : DbContext
+    public class MoviesDbContext : IdentityDbContext<ApplicationUser>
     {
-        public MoviesDbContext() { }
-        public MoviesDbContext(DbContextOptions<MoviesDbContext> options) : base(options) { }
+        private readonly IConfiguration _configuration;
+
+        public MoviesDbContext(DbContextOptions<MoviesDbContext> options, IConfiguration configuration)
+            : base(options)
+        {
+            _configuration = configuration;
+        }
 
         public DbSet<Movie> Movies { get; set; }
+        public DbSet<TopMovie> TopMovies { get; set; }
         public DbSet<MovieRating> MovieRatings { get; set; }
         public DbSet<OmdbRating> OmdbRatings { get; set; }
         public DbSet<Favourite> Favourites { get; set; }
@@ -17,6 +25,8 @@ namespace Movies.Application.Database
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Cast> Casts { get; set; }
         public DbSet<ExternalRating> ExternalRatings { get; set; }
+        public DbSet<MovieGenres> MovieGenres { get; set; }
+        public DbSet<MovieCast> MovieCast { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -54,7 +64,7 @@ namespace Movies.Application.Database
             };
 
             PasswordHasher<ApplicationUser> ph = new PasswordHasher<ApplicationUser>();
-            appUser.PasswordHash = ph.HashPassword(appUser, "abc12345A!");
+            appUser.PasswordHash = ph.HashPassword(appUser, "134013Aa!");
 
             builder.Entity<ApplicationUser>().HasData(appUser);
 
@@ -67,7 +77,7 @@ namespace Movies.Application.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Database");
+            optionsBuilder.UseSqlServer("Server=tcp:dev-data-server-andrei.database.windows.net,1433;Initial Catalog=movies;Persist Security Info=False;User ID=admin-sa;Password=6x2134013A;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
         }
     }
 }

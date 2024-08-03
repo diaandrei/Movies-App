@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Movies.Application.Models;
+using System.Text.Json.Serialization;
 
-namespace Movies.Application.Models
+namespace Movies.Application.DataTransferObjects
 {
-    public class Movie
+    public class MovieDto
     {
-        [Key]
         public Guid Id { get; set; }
+        public string UserId { get; set; }
         public string Title { get; set; }
         public string Released { get; set; }
         public string Runtime { get; set; }
@@ -20,14 +21,14 @@ namespace Movies.Application.Models
         public decimal? UserRating { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-
+        [JsonIgnore]
         public ApplicationUser ApplicationUser { get; set; }
-        public List<Genre> Genres { get; set; } = new List<Genre>();
-        public List<Cast> Cast { get; set; } = new List<Cast>();
-        public List<UserWatchlist> UserWatchlists { get; set; } = new List<UserWatchlist>();
-
-        public List<ExternalRating> ExternalRatings { get; set; } = new List<ExternalRating>();
-        public List<OmdbRating> OmdbRatings { get; set; } = new List<OmdbRating>();
-        public List<MovieRating> MovieRatings { get; set; } = new List<MovieRating>();
+        public Guid UserWatchlistId { get; set; }
+        public DateTime? FirstAddedToWatchlistAt { get; set; }
+        public List<CastDto> Cast { get; set; }
+        public List<GenreDto> Genres { get; set; }
+        public List<ExternalRatingDto> ExternalRatings { get; set; }
+        public List<OmdbRatingDto> OmdbRatings { get; set; }
+        public List<MovieRatingDto> MovieRatings { get; set; }
     }
 }

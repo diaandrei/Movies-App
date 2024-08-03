@@ -1,11 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Movies.Application.Models
+﻿namespace Movies.Contracts.Responses
 {
-    public class Movie
+    public class MovieResponseDto
     {
-        [Key]
         public Guid Id { get; set; }
+        public string UserId { get; set; }
+        public Guid UserWatchlistId { get; set; }
         public string Title { get; set; }
         public string Released { get; set; }
         public string Runtime { get; set; }
@@ -20,14 +19,12 @@ namespace Movies.Application.Models
         public decimal? UserRating { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-
-        public ApplicationUser ApplicationUser { get; set; }
-        public List<Genre> Genres { get; set; } = new List<Genre>();
-        public List<Cast> Cast { get; set; } = new List<Cast>();
-        public List<UserWatchlist> UserWatchlists { get; set; } = new List<UserWatchlist>();
-
-        public List<ExternalRating> ExternalRatings { get; set; } = new List<ExternalRating>();
-        public List<OmdbRating> OmdbRatings { get; set; } = new List<OmdbRating>();
-        public List<MovieRating> MovieRatings { get; set; } = new List<MovieRating>();
+        public bool IsMovieWatchlist { get; set; }
+        public string FirstAddedToWatchlistAt { get; set; }
+        public List<CastResponseDto> Cast { get; set; }
+        public List<GenreResponseDto> Genres { get; set; }
+        public List<ExternalRatingResponseDto> ExternalRatings { get; set; }
+        public List<OmdbRatingResponseDto> OmdbRatings { get; set; }
+        public List<MovieRatingResponseDto> MovieRatings { get; set; }
     }
 }
