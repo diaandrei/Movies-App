@@ -2,6 +2,8 @@
 {
     public class RateMovieRequest
     {
-        public required int Rating { get; set; }
+        public decimal Rating { get; set; }
+        public Guid MovieId { get; set; }
+        public Guid RatingId { get; set; }
     }
 }
