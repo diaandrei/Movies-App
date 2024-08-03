@@ -21,10 +21,10 @@
         public DateTime? UpdatedAt { get; set; }
         public bool IsMovieWatchlist { get; set; }
         public string FirstAddedToWatchlistAt { get; set; }
-        public List<CastResponseDTO> Cast { get; set; }
-        public List<GenreResponseDTO> Genres { get; set; }
-        public List<ExternalRatingResponseDTO> ExternalRatings { get; set; }
-        public List<OmdbRatingResponseDTO> OmdbRatings { get; set; }
-        public List<MovieRatingResponseDTO> MovieRatings { get; set; }
+        public List<CastResponseDto> Cast { get; set; }
+        public List<GenreResponseDto> Genres { get; set; }
+        public List<ExternalRatingResponseDto> ExternalRatings { get; set; }
+        public List<OmdbRatingResponseDto> OmdbRatings { get; set; }
+        public List<MovieRatingResponseDto> MovieRatings { get; set; }
     }
 }
