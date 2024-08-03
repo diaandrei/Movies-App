@@ -31,11 +31,7 @@ namespace Movies.Application.Repositories
 
         public async Task<List<Genre>> GetGenreByMovie(Guid movieId, CancellationToken token = default)
         {
-            return await _dbcontext.Movies
-                .Include(c => c.Genres)
-                .Where(c => c.Id == movieId)
-                .SelectMany(c => c.Genres)
-                .ToListAsync(token);
+            return new List<Genre>();
         }
     }
 }
