@@ -20,12 +20,14 @@ namespace Movies.Application.Models
         public decimal? UserRating { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+
         public ApplicationUser ApplicationUser { get; set; }
         public List<Genre> Genres { get; set; } = new List<Genre>();
         public List<Cast> Cast { get; set; } = new List<Cast>();
         public List<UserWatchlist> UserWatchlists { get; set; } = new List<UserWatchlist>();
-        public IEnumerable<ExternalRating> ExternalRatings { get; set; }
-        public virtual IEnumerable<OmdbRating> OmdbRatings { get; set; }
-        public virtual IEnumerable<MovieRating> MovieRatings { get; set; }
+
+        public List<ExternalRating> ExternalRatings { get; set; } = new List<ExternalRating>();
+        public List<OmdbRating> OmdbRatings { get; set; } = new List<OmdbRating>();
+        public List<MovieRating> MovieRatings { get; set; } = new List<MovieRating>();
     }
 }

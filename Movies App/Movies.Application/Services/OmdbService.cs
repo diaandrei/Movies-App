@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Movies.Application.Models;
 using Movies.Contracts.Responses;
 
 namespace Movies.Application.Services
@@ -14,8 +15,13 @@ namespace Movies.Application.Services
             _logger = logger;
         }
 
-        public async Task<OmdbResponse> GetMovieAsync(string title, string year, CancellationToken token)
+        public async Task<ResponseModel<OmdbResponse>> GetMovieAsync(string title, string year, CancellationToken token)
         {
+            var res = new ResponseModel<OmdbResponse>
+            {
+                Title = "Something went wrong.",
+                Success = false
+            };
             using (_httpClient = new HttpClient())
             {
                 var url = $"http://www.omdbapi.com/?t={title}&y={year}&apikey=b4de2ce9";
@@ -27,11 +33,19 @@ namespace Movies.Application.Services
                 }
                 var content = await response.Content.ReadAsStringAsync();
                 var omdbResponse = JsonSerializer.Deserialize<OmdbResponse>(content);
-                if (omdbResponse.Title is null)
+                if (omdbResponse.Title != null)
                 {
-                    throw new ArgumentException("The movie does not exist.");
+                    res.Content = omdbResponse;
+                    res.Title = "Title successfully retrieved from OMDB.";
+                    res.Success = true;
                 }
-                return omdbResponse;
+                else
+                {
+                    res.Title = "The title does not exist.";
+                    res.Success = false;
+                }
+
+                return res;
             }
         }
     }
