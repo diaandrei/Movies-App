@@ -25,7 +25,7 @@ namespace Movies.Api.Controllers
             _config = config;
         }
 
-        [HttpPost("Register")]
+        [HttpPost(ApiEndpoints.Movies.Register)]
         public async Task<ResponseModel<string>> Register([FromBody] RegisterRequest model)
         {
             ResponseModel<string> response = new ResponseModel<string>();
@@ -90,7 +90,7 @@ namespace Movies.Api.Controllers
             return response;
         }
 
-        [HttpPost("login")]
+        [HttpPost(ApiEndpoints.Movies.Login)]
         public async Task<ResponseModel<LoginDto>> Login([FromBody] LoginRequest model)
         {
             ResponseModel<LoginDto> response = new ResponseModel<LoginDto>();

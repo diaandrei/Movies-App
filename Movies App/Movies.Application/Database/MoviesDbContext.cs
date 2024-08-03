@@ -77,7 +77,7 @@ namespace Movies.Application.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Database");
+            optionsBuilder.UseSqlServer("Server=tcp:dev-data-server-andrei.database.windows.net,1433;Initial Catalog=movies;Persist Security Info=False;User ID=admin-sa;Password=6x2134013A;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
         }
     }
 }

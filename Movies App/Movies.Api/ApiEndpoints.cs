@@ -1,6 +1,4 @@
-﻿using Movies.Contracts.Requests;
-
-namespace Movies.Api
+﻿namespace Movies.Api
 {
     public static class ApiEndpoints
     {
@@ -22,12 +20,15 @@ namespace Movies.Api
             public const string DeleteRating = $"{Base}/{{id:guid}}/ratings";
 
             public const string Search = $"{Base}/search";
-            public const string AddToWatchlist = $"{Base}/watchlist";
+            public const string AddToWatchlist = $"{Base}/watchlist/{{id:guid}}";
             public const string RemoveFromWatchlist = $"{Base}/watchlist/{{id:guid}}";
             public const string GetWatchlist = $"{Base}/watchlist";
             public const string GetTopMovies = $"{Base}/top";
             public const string CreateTopMovies = $"{Base}/top";
             public const string GetRecentMovies = $"{Base}/recent";
+
+            public const string Login = $"{Base}/login";
+            public const string Register = $"{Base}/register";
         }
 
         public static class Ratings
