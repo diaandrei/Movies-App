@@ -66,7 +66,7 @@ namespace Movies.Application.Services
                     token);
                 response.Title = $"{movie.Title} movie created Successfully";
                 response.Success = true;
-                _logger.LogInformation("Successfully created movie: {Title} (ID: {Id})", movie.Title, movie.Id);
+                _logger.LogInformation("Successfully created title: {Title} (ID: {Id})", movie.Title, movie.Id);
 
             }
             catch (Exception ex)
@@ -232,7 +232,7 @@ namespace Movies.Application.Services
 
                 if (movieDetail == null)
                 {
-                    _logger.LogWarning("Movie with ID: {Id} does not exist.", movie.Id);
+                    _logger.LogWarning("Title with ID: {Id} does not exist.", movie.Id);
                     throw new KeyNotFoundException($"Movie with ID '{movie.Id}' does not exist.");
                 }
 
@@ -240,13 +240,13 @@ namespace Movies.Application.Services
                 movieDetail.Plot = movie.Plot;
 
                 await _movieRepository.UpdateAsync(movieDetail, token);
-                _logger.LogInformation("Successfully updated movie: {Title} (ID: {Id})", movieDetail.Title, movie.Id);
+                _logger.LogInformation("Successfully updated title: {Title} (ID: {Id})", movieDetail.Title, movie.Id);
 
                 return movieDetail;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while updating movie: {Title}");
+                _logger.LogError(ex, "An error occurred while updating title: {Title}");
                 throw;
             }
         }
@@ -258,8 +258,8 @@ namespace Movies.Application.Services
                 var success = await _movieRepository.DeleteByIdAsync(id, token);
                 if (!success)
                 {
-                    _logger.LogWarning("Movie with ID: {Id} does not exist.", id);
-                    throw new KeyNotFoundException($"Movie with ID '{id}' does not exist.");
+                    _logger.LogWarning("Title with ID: {Id} does not exist.", id);
+                    throw new KeyNotFoundException($"Title with ID '{id}' does not exist.");
                 }
 
                 _logger.LogInformation("Successfully deleted movie with ID: {Id}", id);
@@ -278,7 +278,7 @@ namespace Movies.Application.Services
             {
                 var count = await _movieRepository.GetCountAsync(title, yearOfRelease, token);
                 _logger.LogInformation(
-                    "Successfully retrieved movie count with title: {Title} and year of release: {YearOfRelease}",
+                    "Successfully retrieved title count with: {Title} and year of release: {YearOfRelease}",
                     title, yearOfRelease);
                 return count;
             }
@@ -294,13 +294,13 @@ namespace Movies.Application.Services
             try
             {
                 var moviesData = await _movieRepository.GetSearchedMoviesAsync(textToSearchMovies);
-                _logger.LogInformation($"Successfully retrieved movies with searchText: {textToSearchMovies}",
+                _logger.LogInformation($"Successfully retrieved titles with searchText: {textToSearchMovies}",
                     textToSearchMovies);
                 return moviesData;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while searching for movies.");
+                _logger.LogError(ex, "An error occurred while searching for titles.");
                 throw;
             }
         }

@@ -28,7 +28,7 @@ namespace Movies.Application.Services
                 var response = await _httpClient.GetAsync(url, token);
                 if (!response.IsSuccessStatusCode)
                 {
-                    _logger.LogError("Failed to get movie from OMDB API. Status code: {StatusCode}", response.StatusCode);
+                    _logger.LogError("Failed to get title from OMDB API. Status code: {StatusCode}", response.StatusCode);
                     return null;
                 }
                 var content = await response.Content.ReadAsStringAsync();

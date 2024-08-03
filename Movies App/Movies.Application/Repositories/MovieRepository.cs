@@ -18,7 +18,7 @@ public class MovieRepository : IMovieRepository
     {
         if (_dbContext.Movies.Any(m => m.Title == movie.Title && m.YearOfRelease == movie.YearOfRelease))
         {
-            throw new ArgumentException("The movie you are trying to add already exists.");
+            throw new ArgumentException("The title you are trying to add already exists.");
         }
 
         foreach (var genre in genres)

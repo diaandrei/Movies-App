@@ -74,11 +74,11 @@ namespace Movies.Api.Controllers
                 {
                     response.Content = movieDetail;
                     response.Success = true;
-                    response.Title = "Movie detail.";
+                    response.Title = "Title detail.";
                 }
                 else
                 {
-                    response.Title = "Movie not found.";
+                    response.Title = "Title not found.";
                 }
             }
             catch (Exception ex)
@@ -114,7 +114,7 @@ namespace Movies.Api.Controllers
                         : movies.MapToResponse(request.Page, request.PageSize, movieCount);
 
                     response.Success = true;
-                    response.Title = "Movies list";
+                    response.Title = "Title list";
                     response.Content = moviesResponse;
                 }
                 else
@@ -154,12 +154,12 @@ namespace Movies.Api.Controllers
                     var movieCount = await _movieService.GetCountAsync(options.Title, options.YearOfRelease, token);
                     var moviesResponse = movies.MapToResponse(request.Page, request.PageSize, movieCount);
                     response.Success = true;
-                    response.Title = "Movies list";
+                    response.Title = "Title list";
                     response.Content = moviesResponse;
                 }
                 else
                 {
-                    response.Title = "No movies found.";
+                    response.Title = "No titles found.";
                 }
 
             }
@@ -202,12 +202,12 @@ namespace Movies.Api.Controllers
                     var moviesResponse = isUserAuthenticated ? result.MapToResponse(request.Page, request.PageSize, movieCount, userId.ToString())
                         : result.MapToResponse(request.Page, request.PageSize, movieCount);
                     response.Success = true;
-                    response.Title = "Movies list";
+                    response.Title = "Titles list";
                     response.Content = moviesResponse;
                 }
                 else
                 {
-                    response.Title = "No movies found.";
+                    response.Title = "No titles found.";
                 }
 
             }
@@ -237,7 +237,7 @@ namespace Movies.Api.Controllers
                 if (updatedMovie != null)
                 {
                     var movieDetail = updatedMovie.MapToResponse();
-                    response.Title = "The movie has been successfully updated.";
+                    response.Title = "The title has been successfully updated.";
                     response.Success = true;
                     response.Content = movieDetail;
                 }
@@ -267,7 +267,7 @@ namespace Movies.Api.Controllers
                 if (deleted)
                 {
                     response.Success = true;
-                    response.Title = "Movie deleted successfully.";
+                    response.Title = "Title deleted successfully.";
                 }
 
             }
@@ -294,7 +294,7 @@ namespace Movies.Api.Controllers
                 if (moviesList != null)
                 {
                     response.Content = moviesList;
-                    response.Title = "Successfully fetched movies.";
+                    response.Title = "Successfully fetched titles.";
                     response.Success = true;
                 }
             }
@@ -358,7 +358,7 @@ namespace Movies.Api.Controllers
                 if (result != null)
                 {
                     response.Success = true;
-                    response.Title = "Movie successfully removed from your watchlist.";
+                    response.Title = "Title successfully removed from your watchlist.";
                 }
             }
             catch (Exception ex)
@@ -433,12 +433,12 @@ namespace Movies.Api.Controllers
                     var moviesResponse = isUserAuthenticated ? result.Content.MapToResponse(1, 10, movieCount, userId.ToString())
                         : result.Content.MapToResponse(1, 10, movieCount);
                     response.Success = true;
-                    response.Title = "Movies list";
+                    response.Title = "Titles list";
                     response.Content = moviesResponse;
                 }
                 else
                 {
-                    response.Title = "Movies not found.";
+                    response.Title = "Titles not found.";
                 }
             }
             catch (Exception ex)
@@ -474,7 +474,7 @@ namespace Movies.Api.Controllers
                 }
                 else
                 {
-                    response.Title = "Movies not found.";
+                    response.Title = "Titles not found.";
                 }
 
             }
@@ -515,12 +515,12 @@ namespace Movies.Api.Controllers
                     var movieCount = await _movieService.GetCountAsync("", "", token);
                     var moviesResponse = movies.MapToResponse(1, 10, movieCount);
                     response.Success = true;
-                    response.Title = "Most recent Movies list";
+                    response.Title = "Most recent Titles list";
                     response.Content = moviesResponse;
                 }
                 else
                 {
-                    response.Title = "Movies not found.";
+                    response.Title = "Titles not found.";
                 }
 
             }

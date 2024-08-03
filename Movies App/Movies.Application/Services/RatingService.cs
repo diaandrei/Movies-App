@@ -35,16 +35,16 @@ namespace Movies.Application.Services
 
             if (!await _movieRepository.ExistsByIdAsync(movieRating.MovieId, token))
             {
-                _logger.LogWarning("Movie with ID: {MovieId} does not exist.", movieRating.MovieId);
-                response.Title = "Movie does not exist";
+                _logger.LogWarning("Title with ID: {MovieId} does not exist.", movieRating.MovieId);
+                response.Title = "Title does not exist";
                 return response;
             }
 
             var isMovieRatedByUser = await _ratingRepository.IsMovieRatedAsync(movieRating.MovieId, movieRating.UserId, token);
             if (isMovieRatedByUser)
             {
-                _logger.LogWarning("Movie with ID: {MovieId} is already rated by user {UserId}. Admin rights are required to update.", movieRating.MovieId, movieRating.UserId);
-                response.Title = "Movie is already rated";
+                _logger.LogWarning("Title with ID: {MovieId} is already rated by user {UserId}.", movieRating.MovieId, movieRating.UserId);
+                response.Title = "Title is already rated";
             }
 
             try
@@ -60,8 +60,8 @@ namespace Movies.Application.Services
                             result = await _ratingRepository.UpdateMovieRatedAsync(movieRating, token);
                             if (result)
                             {
-                                _logger.LogInformation("Admin user {UserId} updated movie rating for movie {MovieId} to {Rating}.", movieRating.UserId, movieRating.MovieId, movieRating.Rating);
-                                response.Title = "Movie rating updated successfully.";
+                                _logger.LogInformation("Admin user {UserId} updated title rating for {MovieId} to {Rating}.", movieRating.UserId, movieRating.MovieId, movieRating.Rating);
+                                response.Title = "Title rating updated successfully.";
                                 response.Success = true;
                                 return response;
                             }
@@ -69,7 +69,7 @@ namespace Movies.Application.Services
                     }
                     else
                     {
-                        _logger.LogWarning("User {UserId} is not an admin and cannot update rating for movie {MovieId}.", movieRating.UserId, movieRating.MovieId);
+                        _logger.LogWarning("User {UserId} failed to update title {MovieId}.", movieRating.UserId, movieRating.MovieId);
                         response.Title = "User cannot update rating";
                         return response;
                     }
@@ -79,8 +79,8 @@ namespace Movies.Application.Services
                     result = await _ratingRepository.RateMovieAsync(movieRating, token);
                     if (result)
                     {
-                        _logger.LogInformation("User {UserId} rated movie {MovieId} with rating {Rating}.", movieRating.UserId, movieRating.MovieId, movieRating.Rating);
-                        response.Title = "Movie rated successfully.";
+                        _logger.LogInformation("User {UserId} rated title {MovieId} with rating {Rating}.", movieRating.UserId, movieRating.MovieId, movieRating.Rating);
+                        response.Title = "Title rated successfully.";
                         response.Success = true;
                         return response;
                     }
@@ -88,8 +88,8 @@ namespace Movies.Application.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while processing the rating for movie {MovieId} by user {UserId}.", movieRating.MovieId, movieRating.UserId);
-                response.Title = "An error occurred while processing the rating for the movie.";
+                _logger.LogError(ex, "An error occurred while processing the rating for title {MovieId} by user {UserId}.", movieRating.MovieId, movieRating.UserId);
+                response.Title = "An error occurred while processing the rating for the title.";
             }
 
             return response;
@@ -109,14 +109,14 @@ namespace Movies.Application.Services
                 var result = await _ratingRepository.DeleteRatingAsync(movieId, token);
                 if (result)
                 {
-                    _logger.LogInformation("User {UserId} deleted rating for movie {MovieId}.", userId, movieId);
+                    _logger.LogInformation("User {UserId} deleted rating for title {MovieId}.", userId, movieId);
                     response.Title = "User rating deleted successfully.";
                     response.Success = true;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while deleting rating for movie {MovieId} by user {UserId}.",
+                _logger.LogError(ex, "An error occurred while deleting rating for title {MovieId} by user {UserId}.",
                     movieId, userId);
                 response.Title = ex.Message;
             }
@@ -137,7 +137,7 @@ namespace Movies.Application.Services
                 if (ratings != null)
                 {
                     _logger.LogInformation("Retrieved ratings for user {UserId}.", userId);
-                    response.Title = "Movie rating list";
+                    response.Title = "Title rating list";
                     response.Success = true;
                     response.Content = ratings;
                 }

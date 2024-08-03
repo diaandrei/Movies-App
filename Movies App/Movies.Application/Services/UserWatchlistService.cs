@@ -37,15 +37,15 @@ namespace Movies.Application.Services
                 var success = await _userWatchlistRepository.DeleteByIdAsync(id, token);
                 if (!success)
                 {
-                    _logger.LogWarning("Movie with ID: {Id} does not exist.", id);
+                    _logger.LogWarning("Title with ID: {Id} does not exist.", id);
                     throw new KeyNotFoundException($"Movie with ID '{id}' does not exist.");
                 }
-                _logger.LogInformation("Successfully deleted movie with ID: {Id}", id);
+                _logger.LogInformation("Successfully deleted title with ID: {Id}", id);
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while deleting movie by ID: {Id}", id);
+                _logger.LogError(ex, "An error occurred while deleting title by ID: {Id}", id);
                 throw;
             }
         }
@@ -55,12 +55,12 @@ namespace Movies.Application.Services
             try
             {
                 var movies = await _userWatchlistRepository.GetAllAsync(isAdmin, userId, token);
-                _logger.LogInformation("Successfully retrieved all movies with options: {Options}");
+                _logger.LogInformation("Successfully retrieved all titles with options: {Options}");
                 return movies;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while getting all movies.");
+                _logger.LogError(ex, "An error occurred while getting all titles.");
                 throw;
             }
         }
@@ -84,20 +84,20 @@ namespace Movies.Application.Services
 
                 if (movieDetail == null)
                 {
-                    _logger.LogWarning("Movie with ID: {Id} does not exist.", movie.Id);
-                    throw new KeyNotFoundException($"Movie with ID '{movie.Id}' does not exist.");
+                    _logger.LogWarning("Title with ID: {Id} does not exist.", movie.Id);
+                    throw new KeyNotFoundException($"Title with ID '{movie.Id}' does not exist.");
                 }
                 movieDetail.UpdatedAt = movie.UpdatedAt;
                 movieDetail.IsActive = false;
                 movieDetail.UserId = movie.UserId;
                 await _userWatchlistRepository.UpdateAsync(movieDetail, token);
-                _logger.LogInformation("Successfully updated movie: {Title} (ID: {Id})");
+                _logger.LogInformation("Successfully updated title: {Title} (ID: {Id})");
 
                 return movie;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while updating movie: {Title}");
+                _logger.LogError(ex, "An error occurred while updating title: {Title}");
                 throw;
             }
         }
@@ -128,14 +128,14 @@ namespace Movies.Application.Services
 
                             if (!updateResult.Succeeded)
                             {
-                                _logger.LogWarning("Failed to add movie to watchlist for user: {UserId}", userWatchlist.UserId);
+                                _logger.LogWarning("Failed to add title to watchlist for user: {UserId}", userWatchlist.UserId);
                             }
                         }
                     }
 
-                    response.Title = "Successfully added the movie to your watchlist";
+                    response.Title = "Successfully added the title to your watchlist";
                     response.Success = true;
-                    _logger.LogInformation("Successfully added movie to watchlist: (movieId: {MovieId}, userId: {UserId})", userWatchlist.MovieId, userWatchlist.UserId);
+                    _logger.LogInformation("Successfully added title to watchlist: (movieId: {MovieId}, userId: {UserId})", userWatchlist.MovieId, userWatchlist.UserId);
                 }
 
             }
@@ -143,7 +143,7 @@ namespace Movies.Application.Services
             {
                 response.Title = ex.Message;
                 response.Success = false;
-                _logger.LogError(ex, "An error occurred while adding movie to watchlist: {MovieId}", userWatchlist.MovieId);
+                _logger.LogError(ex, "An error occurred while adding title to watchlist: {MovieId}", userWatchlist.MovieId);
                 throw;
             }
             return response;
