@@ -99,7 +99,10 @@ public class Program
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Movies API", Version = "v1" });
                 c.CustomSchemaIds(type => type.FullName);
+                c.SchemaFilter<ExcludeSystemTypesSchemaFilter>();
+                c.DocInclusionPredicate((docName, apiDesc) => !apiDesc.RelativePath.Contains("admin"));
             });
+
             builder.Services.AddApplication();
 
             var app = builder.Build();
