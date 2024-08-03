@@ -39,9 +39,16 @@ namespace Movies.Application.Validators
 
         private async Task<bool> NotBeDuplicateMovieAsync(Movie movie, CancellationToken token)
         {
-            var existingMovie = await _dbContext.Movies
-                .FirstOrDefaultAsync(m => m.Title == movie.Title && m.YearOfRelease == movie.YearOfRelease, token);
-            return existingMovie == null || existingMovie.Id == movie.Id;
+            try
+            {
+                var existingMovie = await _dbContext.Movies
+                    .FirstOrDefaultAsync(m => m.Title == movie.Title && m.YearOfRelease == movie.YearOfRelease, token);
+                return existingMovie == null || existingMovie.Id == movie.Id;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
         private async Task<bool> BeAValidMovieAsync(string title, CancellationToken token)
