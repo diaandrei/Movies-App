@@ -2,17 +2,14 @@
 
 namespace Movies.Application.Models
 {
-    public class MovieRating
+    public class TopMovie
     {
         [Key]
         public Guid Id { get; set; }
         public Guid MovieId { get; set; }
-        public decimal Rating { get; set; }
-        public string UserId { get; set; }
-        public bool IsUserRated { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public ApplicationUser User { get; set; }
         public Movie Movie { get; set; }
+        public string UserId { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
