@@ -119,7 +119,7 @@ namespace Movies.Api.Controllers
                 }
                 else
                 {
-                    response.Title = "No movies found.";
+                    response.Title = "No titles found.";
                 }
             }
             catch (Exception ex)

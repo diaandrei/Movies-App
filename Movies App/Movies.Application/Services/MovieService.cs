@@ -40,8 +40,8 @@ namespace Movies.Application.Services
 
             if (omdbResponse.Success == false || string.IsNullOrEmpty(omdbResponse.Content.Title))
             {
-                response.Title = "The movie does not exist.";
-                _logger.LogWarning("The response is null or title is empty for movie: {Title}", movie.Title);
+                response.Title = "The title does not exist.";
+                _logger.LogWarning("The response is null or title is empty for: {Title}", movie.Title);
                 return response;
             }
 
@@ -64,7 +64,7 @@ namespace Movies.Application.Services
             {
                 await _movieRepository.CreateAsync(movie, movieWithGenres, movieWithCast, omdbResponse.Content.Ratings,
                     token);
-                response.Title = $"{movie.Title} movie created Successfully";
+                response.Title = $"{movie.Title} title created Successfully";
                 response.Success = true;
                 _logger.LogInformation("Successfully created title: {Title} (ID: {Id})", movie.Title, movie.Id);
 
@@ -93,7 +93,7 @@ namespace Movies.Application.Services
             {
                 if (topMovies.Count < 10)
                 {
-                    responseModel.Title = "The number of top movies is less than the required minimum of 10.";
+                    responseModel.Title = "The number of top titles is less than the required minimum of 10.";
                     return responseModel;
                 }
 
@@ -107,12 +107,12 @@ namespace Movies.Application.Services
                     if (movie)
                     {
                         responseModel.Success = true;
-                        responseModel.Title = "Top movies have been successfully added to the list.";
+                        responseModel.Title = "Top titles have been successfully added to the list.";
                     }
                 }
                 else
                 {
-                    responseModel.Title = "Some movies were not found in the collection.";
+                    responseModel.Title = "Some titles were not found in the collection.";
                 }
             }
             catch (Exception ex)
@@ -131,12 +131,12 @@ namespace Movies.Application.Services
                 var movie = await _movieRepository.GetByIdAsync(id, isAdmin, userId, token);
                 var avgUserRating = await _ratingRepository.GetAvgUserMovieRatingAsync(movie.Id);
                 movie.UserRating = avgUserRating;
-                _logger.LogInformation("Successfully retrieved movie by ID: {Id}", id);
+                _logger.LogInformation("Successfully retrieved titles by ID: {Id}", id);
                 return movie;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving movie by ID: {Id}", id);
+                _logger.LogError(ex, "An error occurred while retrieving title by ID: {Id}", id);
                 throw;
             }
         }
@@ -161,12 +161,12 @@ namespace Movies.Application.Services
                     return sortedMovies;
                 }
 
-                _logger.LogInformation("Successfully retrieved all movies with options: {Options}", options);
+                _logger.LogInformation("Successfully retrieved all titles with options: {Options}", options);
                 return movies;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while getting all movies.");
+                _logger.LogError(ex, "An error occurred while getting all titles.");
                 throw;
             }
         }
@@ -191,12 +191,12 @@ namespace Movies.Application.Services
 
                 response.Content = movieList;
                 response.Success = true;
-                response.Title = "Top movies list";
+                response.Title = "Top titles list";
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to retrieve top movies");
-                response.Title = "Failed to retrieve top movies.";
+                _logger.LogError(ex, "Failed to retrieve top titles");
+                response.Title = "Failed to retrieve top titles.";
             }
 
             return response;
@@ -214,12 +214,12 @@ namespace Movies.Application.Services
                     item.UserRating = avgMovieRating;
                 }
 
-                _logger.LogInformation("Successfully retrieved top movies ");
+                _logger.LogInformation("Successfully retrieved top titles ");
                 return movies;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while getting all movies.");
+                _logger.LogError(ex, "An error occurred while getting all titles.");
                 throw;
             }
         }
@@ -233,7 +233,7 @@ namespace Movies.Application.Services
                 if (movieDetail == null)
                 {
                     _logger.LogWarning("Title with ID: {Id} does not exist.", movie.Id);
-                    throw new KeyNotFoundException($"Movie with ID '{movie.Id}' does not exist.");
+                    throw new KeyNotFoundException($"Title with ID '{movie.Id}' does not exist.");
                 }
 
                 movieDetail.UpdatedAt = DateTime.UtcNow;
@@ -262,12 +262,12 @@ namespace Movies.Application.Services
                     throw new KeyNotFoundException($"Title with ID '{id}' does not exist.");
                 }
 
-                _logger.LogInformation("Successfully deleted movie with ID: {Id}", id);
+                _logger.LogInformation("Successfully deleted title with ID: {Id}", id);
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while deleting movie by ID: {Id}", id);
+                _logger.LogError(ex, "An error occurred while deleting title by ID: {Id}", id);
                 throw;
             }
         }
@@ -284,7 +284,7 @@ namespace Movies.Application.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while getting the movie count.");
+                _logger.LogError(ex, "An error occurred while getting the title count.");
                 throw;
             }
         }
