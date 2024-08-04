@@ -343,7 +343,7 @@ public class MovieRepository : IMovieRepository
             .Where(mr => movieIds.Contains(mr.MovieId) && mr.UserId == userId)
             .ToListAsync(token);
 
-        var userWactlist = await _dbContext.UserWatchlists
+        var userWatchlist = await _dbContext.UserWatchlists
             .Where(uw => movieIds.Contains(uw.MovieId) && uw.UserId == userId)
             .ToListAsync(token);
 
@@ -402,7 +402,7 @@ public class MovieRepository : IMovieRepository
                 Rating = mr.Rating
             }).ToList(),
 
-            UserWatchlists = userWactlist.Where(uw => uw.MovieId == movie.Id).Select(uw => new UserWatchlist
+            UserWatchlists = userWatchlist.Where(uw => uw.MovieId == movie.Id).Select(uw => new UserWatchlist
             {
                 Id = uw.Id,
                 MovieId = uw.MovieId,
