@@ -531,6 +531,7 @@ public class MovieRepository : IMovieRepository
                 return false;
             }
 
+            existingMovie.Plot = movie.Plot;
             existingMovie.UserRating = movie?.UserRating;
             existingMovie.UpdatedAt = DateTime.UtcNow;
 
