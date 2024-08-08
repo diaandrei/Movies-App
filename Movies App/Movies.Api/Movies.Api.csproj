@@ -6,6 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>9b62789a-bdbd-45f9-b489-db8e871376a7</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<SelfContained>false</SelfContained>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -31,4 +32,10 @@
 		<ProjectReference Include="..\Movies.Identity\Movies.Identity.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<None Update="web.config">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
+		</None>
+	</ItemGroup>
 </Project>

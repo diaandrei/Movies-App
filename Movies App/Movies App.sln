@@ -9,7 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Movies.Application", "Movie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Movies.Contracts", "Movies.Contracts\Movies.Contracts.csproj", "{D58BDDC8-08CE-4128-9CB1-288A1BDA0DF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Identity", "Movies.Identity\Movies.Identity.csproj", "{B7134B3F-01D4-42B5-B5BA-2BBDA9A0AF68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Movies.Identity", "Movies.Identity\Movies.Identity.csproj", "{B7134B3F-01D4-42B5-B5BA-2BBDA9A0AF68}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipeline", "Pipeline", "{43E1FBBB-7111-4118-941C-0D76E766E415}"
+	ProjectSection(SolutionItems) = preProject
+		pipeline.yml = pipeline.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

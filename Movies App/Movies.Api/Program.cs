@@ -1,5 +1,3 @@
-using System.Collections.ObjectModel;
-using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -9,13 +7,15 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Movies.Api.Mapping;
 using Movies.Api.Swagger;
-using Movies.Application;
 using Movies.Application.Database;
 using Movies.Application.Models;
 using Movies.Identity;
-using Serilog;
 using Serilog.Sinks.MSSqlServer;
+using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Collections.ObjectModel;
+using System.Text;
+using Movies.Application;
 
 public class Program
 {
@@ -31,8 +31,10 @@ public class Program
             {
                 throw new ArgumentNullException("Database connection string is missing or empty.");
             }
+
             builder.Services.AddDbContext<MoviesDbContext>(options =>
-            options.UseSqlServer(connectionString));
+                options.UseSqlServer(connectionString));
+
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(config)
                 .Enrich.FromLogContext()
@@ -51,8 +53,9 @@ public class Program
                 .CreateLogger();
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-            .AddEntityFrameworkStores<MoviesDbContext>()
-            .AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<MoviesDbContext>()
+                .AddDefaultTokenProviders();
+
             builder.Host.UseSerilog();
 
             builder.Services.AddAuthentication(x =>
@@ -78,6 +81,7 @@ public class Program
             builder.Services.AddAuthorization();
             builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwagger>();
             builder.Services.AddControllers();
+
             var configMap = new AutoMapper.MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new MappingProfile());
@@ -88,6 +92,7 @@ public class Program
             var mapper = configMap.CreateMapper();
             builder.Services.AddSingleton(mapper);
             builder.Services.AddEndpointsApiExplorer();
+
             builder.Services.AddCors(option =>
             {
                 option.AddPolicy("AllowOrigin", origin => origin.AllowAnyOrigin()
@@ -107,23 +112,28 @@ public class Program
 
             var app = builder.Build();
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Path == "/")
+                {
+                    context.Response.Redirect("/swagger/index.html");
+                    return;
+                }
+                await next();
+            });
+
             app.UseRouting();
             app.UseCors("AllowOrigin");
             app.UseAuthentication();
-
             app.UseAuthorization();
-
             app.UseMiddleware<ValidationMappingMiddleware>();
             app.UseMiddleware<TokenMiddleware>();
-
             app.MapControllers();
 
             app.Run();
