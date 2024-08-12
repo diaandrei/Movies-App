@@ -33,11 +33,13 @@ stages:
               installationPath: $(Agent.ToolsDirectory)/dotnet
 
           - script: |
+              echo "##[section]Changing to the Movies.Api project directory"
+              cd "Movies App/Movies.Api"  # Navigate to the Movies.Api project directory
               echo "##[section]Building the project"
               dotnet build --configuration $(buildConfiguration)
             displayName: Build
 
-          # Tests section
+          # test section
           # - script: |
           #     echo "##[section]Running tests"
           #     dotnet test --configuration $(buildConfiguration) --no-build --verbosity normal
