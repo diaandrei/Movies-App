@@ -36,8 +36,8 @@ stages:
               echo "##[section]Changing to the Movies.Api project directory"
               cd "Movies App/Movies.Api"  # Navigate to the Movies.Api project directory
               echo "##[section]Building the project"
-              dotnet build --configuration $(buildConfiguration)
-            displayName: Build
+              dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
+            displayName: Build and Publish
 
           # test section
           # - script: |
@@ -45,10 +45,19 @@ stages:
           #     dotnet test --configuration $(buildConfiguration) --no-build --verbosity normal
           #   displayName: Test
 
+          - task: ArchiveFiles@2
+            displayName: "Archive files"
+            inputs:
+              rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+              replaceExistingArchive: true
+
           - task: PublishPipelineArtifact@1
             displayName: Publish Artifact
             inputs:
-              targetPath: '$(Build.ArtifactStagingDirectory)'
+              targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
               artifactName: 'drop'
               publishLocation: 'Pipeline'
 
@@ -82,9 +91,8 @@ stages:
                 - download: current
                   artifact: drop
 
-                - task: AzureWebApp@1
+                - task: AzureRmWebAppDeployment@4
                   inputs:
-                    azureSubscription: Visual Studio Enterprise Subscription(e5855b08-7ae6-492b-b26a-0729c22fa918)
-                    appType: webApp
-                    appName: moviesBackEnd
-                    package: $(Pipeline.Workspace)/drop
+                    azureSubscription: "Visual Studio Enterprise Subscription(e5855b08-7ae6-492b-b26a-0729c22fa918)"
+                    WebAppName: "moviesBackEnd"
+                    package: "$(Pipeline.Workspace)/drop/$(Build.BuildId).zip"
