@@ -26,7 +26,7 @@ stages:
 
         steps:
           - task: UseDotNet@2
-            displayName: Use .NET Core sdk
+            displayName: Use .NET Core SDK
             inputs:
               packageType: 'sdk'
               version: '8.x'
@@ -36,30 +36,21 @@ stages:
               echo "##[section]Changing to the Movies.Api project directory"
               cd "Movies App/Movies.Api"  # Navigate to the Movies.Api project directory
               echo "##[section]Building the project"
-              dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
+              dotnet publish --configuration $(buildConfiguration) --output $(System.DefaultWorkingDirectory)/build
             displayName: Build and Publish
 
-          # test section
+          # testing section
           # - script: |
           #     echo "##[section]Running tests"
           #     dotnet test --configuration $(buildConfiguration) --no-build --verbosity normal
-          #   displayName: Test
-
-          - task: ArchiveFiles@2
-            displayName: "Archive files"
-            inputs:
-              rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
-              includeRootFolder: false
-              archiveType: 'zip'
-              archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-              replaceExistingArchive: true
+          #   displayName: Run Tests
 
           - task: PublishPipelineArtifact@1
-            displayName: Publish Artifact
+            displayName: "Publish Artifact"
             inputs:
-              targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-              artifactName: 'drop'
-              publishLocation: 'Pipeline'
+              targetPath: "$(System.DefaultWorkingDirectory)/build"
+              artifactName: "drop"
+              publishLocation: "Pipeline"
 
   - stage: Approval
     displayName: "Approval Before Deploy"
@@ -89,10 +80,11 @@ stages:
             deploy:
               steps:
                 - download: current
-                  artifact: drop
+                  artifact: "drop"
 
-                - task: AzureRmWebAppDeployment@4
+                - task: AzureWebApp@1
                   inputs:
                     azureSubscription: "Visual Studio Enterprise Subscription(e5855b08-7ae6-492b-b26a-0729c22fa918)"
-                    WebAppName: "moviesBackEnd"
-                    package: "$(Pipeline.Workspace)/drop/$(Build.BuildId).zip"
+                    appType: "webApp"
+                    appName: "moviesBackEnd"
+                    package: "$(Pipeline.Workspace)/drop"
