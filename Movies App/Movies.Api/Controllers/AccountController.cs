@@ -163,11 +163,5 @@ namespace Movies.Api.Controllers
 
             return response;
         }
-
-        [HttpGet("test")]
-        public async Task<IActionResult> Test()
-        {
-            return Ok("Test");
-        }
     }
 }
