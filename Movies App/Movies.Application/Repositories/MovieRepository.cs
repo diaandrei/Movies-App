@@ -47,6 +47,11 @@ public class MovieRepository : IMovieRepository
             }
         }
 
+        var yearOfRelease = movie.YearOfRelease.EndsWith("-")
+            ? movie.YearOfRelease = movie.YearOfRelease.Replace("-", "")
+            : movie.YearOfRelease;
+        movie.YearOfRelease = yearOfRelease;
+
         await _dbContext.Movies.AddAsync(movie, token);
         await _dbContext.SaveChangesAsync(token);
 
@@ -69,14 +74,30 @@ public class MovieRepository : IMovieRepository
             };
             _dbContext.MovieCast.Add(movieCast);
         }
+
         foreach (var omdbRating in ombdRatings)
         {
+            var ratingValue = omdbRating.Value;
+            if (!string.IsNullOrEmpty(ratingValue) && ratingValue.Contains("/"))
+            {
+                var parts = ratingValue.Split('/');
+
+                if (double.TryParse(parts[0], out var numerator) && double.TryParse(parts[1], out var denominator) && denominator != 0)
+                {
+
+                    double percentage = (numerator / denominator) * 100;
+                    string roundedPercentage = Math.Round(percentage, 2).ToString("0");
+
+
+                    ratingValue = roundedPercentage + "%";
+                }
+            }
             var rating = new OmdbRating
             {
                 Id = Guid.NewGuid(),
                 MovieId = movie.Id,
                 Source = omdbRating.Source,
-                Value = omdbRating.Value
+                Value = ratingValue
             };
             _dbContext.OmdbRatings.Add(rating);
         }
@@ -446,6 +467,7 @@ public class MovieRepository : IMovieRepository
         var movieRatings = await _dbContext.MovieRatings
                 .Where(mr => movieIds.Contains(mr.MovieId) && mr.UserId == userId)
                 .ToListAsync(token);
+
         var userWatchlist = await _dbContext.UserWatchlists
             .Where(uw => movieIds.Contains(uw.MovieId) && uw.UserId == userId)
             .ToListAsync(token);
@@ -524,16 +546,17 @@ public class MovieRepository : IMovieRepository
     {
         try
         {
-            var existingMovie = await _dbContext.Movies.FindAsync(movie?.Id);
+            var existingMovie = await GetByIdAsync(movie.Id);
 
             if (existingMovie == null)
             {
                 return false;
             }
 
-            existingMovie.Plot = movie.Plot;
-            existingMovie.UserRating = movie?.UserRating;
-            existingMovie.UpdatedAt = DateTime.UtcNow;
+            await UpdateMovieBasicProperties(existingMovie, movie, token);
+            await UpdateOrAddCastAsync(existingMovie, movie.Cast, token);
+            await UpdateOrAddOmdbRatingsAsync(existingMovie, movie.OmdbRatings, token);
+            await UpdateOrAddMovieRatingsAsync(existingMovie, movie.MovieRatings, token);
 
             await _dbContext.SaveChangesAsync(token);
 
@@ -541,8 +564,126 @@ public class MovieRepository : IMovieRepository
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return false;
         }
+    }
+
+    private async Task UpdateMovieBasicProperties(Movie existingMovie, Movie movie, CancellationToken token)
+    {
+        var db = await _dbContext.Movies.FindAsync(movie?.Id);
+        db.Plot = !string.IsNullOrEmpty(movie.Plot) ? movie.Plot : existingMovie.Plot;
+        db.IsActive = movie.IsActive;
+        db.Rating = movie.Rating ?? existingMovie.Rating;
+        db.UserRating = movie.UserRating ?? existingMovie.UserRating;
+        db.UpdatedAt = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync(token);
+    }
+
+    private async Task UpdateOrAddCastAsync(Movie existingMovie, List<Cast> newCasts, CancellationToken token)
+    {
+        var existingCasts = await _dbContext.Casts.Where(c => newCasts.Select(ec => ec.Name).Contains(c.Name)).ToListAsync(token);
+        var castIds = new List<Guid>();
+        var newCastId = Guid.NewGuid();
+        foreach (var newCast in newCasts)
+        {
+            var existingCast = existingCasts.FirstOrDefault(c => c.Name == newCast.Name);
+
+            if (existingCast != null)
+            {
+                existingCast.Name = newCast.Name;
+                existingCast.Role = newCast.Role;
+                castIds.Add(existingCast.Id);
+            }
+            else
+            {
+                var castToAdd = new Cast
+                {
+                    Id = newCastId,
+                    Name = newCast.Name,
+                    Role = newCast.Role,
+                };
+                _dbContext.Casts.Add(castToAdd);
+                castIds.Add(newCastId);
+
+            }
+        }
+        await _dbContext.SaveChangesAsync(token);
+
+        var existingMovieCasts = await _dbContext.MovieCast
+            .Where(mc => mc.MovieId == existingMovie.Id)
+            .ToListAsync(token);
+
+        _dbContext.MovieCast.RemoveRange(existingMovieCasts);
+
+        foreach (var castId in castIds)
+        {
+            var movieCast = new MovieCast
+            {
+                MovieId = existingMovie.Id,
+                CastId = castId
+            };
+            _dbContext.MovieCast.Add(movieCast);
+        }
+        await _dbContext.SaveChangesAsync(token);
+    }
+
+    private async Task UpdateOrAddOmdbRatingsAsync(Movie existingMovie, List<OmdbRating> newOmdbRatings, CancellationToken token)
+    {
+        var existingOmdbRatings = await _dbContext.OmdbRatings.Where(or => or.MovieId == existingMovie.Id).ToListAsync(token);
+
+        var newId = Guid.NewGuid();
+
+        foreach (var newOmdbRating in newOmdbRatings)
+        {
+            var existingOmdbRating = existingOmdbRatings.FirstOrDefault(or => or.Source == newOmdbRating.Source);
+            if (existingOmdbRating != null)
+            {
+                existingOmdbRating.Value = newOmdbRating.Value;
+            }
+            else
+            {
+                var ombRatingToAdd = new OmdbRating
+                {
+                    Id = newId,
+                    Source = newOmdbRating.Source,
+                    MovieId = existingMovie.Id,
+                    Value = newOmdbRating.Value
+                };
+                _dbContext.OmdbRatings.Add(ombRatingToAdd);
+            }
+        }
+        await _dbContext.SaveChangesAsync(token);
+    }
+
+    private async Task UpdateOrAddMovieRatingsAsync(Movie existingMovie, List<MovieRating> newMovieRatings, CancellationToken token)
+    {
+        var existingMovieRatings = await _dbContext.MovieRatings.Where(mr => mr.MovieId == existingMovie.Id).ToListAsync(token);
+
+        var newId = new Guid();
+
+        foreach (var newMovieRating in newMovieRatings)
+        {
+            var existingMovieRating = existingMovieRatings.FirstOrDefault(mr => mr.UserId == newMovieRating.UserId);
+            if (existingMovieRating != null)
+            {
+                existingMovieRating.Rating = newMovieRating.Rating;
+            }
+            else
+            {
+                var movieRatingToAdd = new MovieRating
+                {
+
+                    UserId = newMovieRating.UserId,
+                    Rating = newMovieRating.Rating,
+                    IsUserRated = newMovieRating.IsUserRated,
+                    UpdatedAt = newMovieRating.UpdatedAt
+                };
+                _dbContext.MovieRatings.Add(movieRatingToAdd);
+            }
+        }
+        await _dbContext.SaveChangesAsync(token);
     }
 
     public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
@@ -581,6 +722,7 @@ public class MovieRepository : IMovieRepository
         }
         return await query.CountAsync(token);
     }
+
     public async Task<IEnumerable<Movie>> GetSearchedMoviesAsync(string? textToSearchMovie, CancellationToken token = default)
     {
         var query = _dbContext.Movies.AsQueryable();

@@ -18,7 +18,7 @@ namespace Movies.Application.Validators
 
             RuleFor(x => x.Id)
                 .NotEmpty()
-                .WithMessage("Movie ID cannot be empty.");
+                .WithMessage("Title id cannot be empty.");
 
             RuleFor(x => x.Title)
                 .NotEmpty()
@@ -30,11 +30,11 @@ namespace Movies.Application.Validators
 
             RuleFor(x => x)
                 .MustAsync(NotBeDuplicateMovieAsync)
-                .WithMessage("This movie already exists.");
+                .WithMessage("This title already exists.");
 
             RuleFor(x => x.Title)
                 .MustAsync(BeAValidMovieAsync)
-                .WithMessage("The movie does not exist.");
+                .WithMessage("The title does not exist.");
         }
 
         private async Task<bool> NotBeDuplicateMovieAsync(Movie movie, CancellationToken token)

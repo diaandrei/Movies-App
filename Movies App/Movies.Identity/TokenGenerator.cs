@@ -45,8 +45,8 @@ namespace Movies.Identity
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.Add(TokenLifetime),
-                Issuer = "https://id.test.com",
-                Audience = "https://movies.test.com",
+                Issuer = "https://id.movies.com",
+                Audience = "https://movies.com",
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
