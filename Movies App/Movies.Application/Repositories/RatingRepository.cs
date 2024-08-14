@@ -19,7 +19,7 @@ namespace Movies.Application.Repositories
             {
                 Id = Guid.NewGuid(),
                 MovieId = movieRating.MovieId,
-                Rating = movieRating.Rating,
+                Rating = Math.Round(movieRating.Rating, 2),
                 UserId = movieRating.UserId,
                 CreatedAt = movieRating.CreatedAt,
                 IsUserRated = true
@@ -71,6 +71,21 @@ namespace Movies.Application.Repositories
                 .AnyAsync(x => x.MovieId == movieId && x.UserId == userId, token);
         }
 
+        public async Task<string> MovieRatedAsync(Guid Id, Guid movieId, string userId, CancellationToken token = default)
+        {
+            var isRated = await _dbcontext.MovieRatings
+                .AnyAsync(x => x.Id == Id && x.MovieId == movieId && x.UserId == userId, token);
+
+            if (isRated)
+            {
+                return userId;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public async Task<bool> UpdateMovieRatedAsync(MovieRating movieRating, CancellationToken token = default)
         {
             try
@@ -84,7 +99,6 @@ namespace Movies.Application.Repositories
                 }
                 existingMovieRating.Rating = movieRating.Rating;
                 existingMovieRating.UpdatedAt = DateTime.UtcNow;
-                existingMovieRating.UserId = movieRating.UserId;
                 await _dbcontext.SaveChangesAsync(token);
 
                 return true;
@@ -105,8 +119,10 @@ namespace Movies.Application.Repositories
 
                 if (ratings.Any())
                 {
-                    return ratings.Average();
+                    var averageRating = ratings.Average();
+                    return Math.Round(averageRating, 2);
                 }
+
                 return 0;
             }
             catch (Exception ex)
