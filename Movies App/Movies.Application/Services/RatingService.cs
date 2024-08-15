@@ -18,7 +18,7 @@ namespace Movies.Application.Services
             _logger = logger;
         }
 
-        public async Task<ResponseModel<string>> RateMovieAsync(MovieRating movieRating, bool isAdmin, CancellationToken token = default)
+        public async Task<ResponseModel<string>> RateMovieAsync(MovieRating movieRating, bool isAdmin, string userId = null!, CancellationToken token = default)
         {
             var response = new ResponseModel<string>
             {
@@ -26,7 +26,7 @@ namespace Movies.Application.Services
                 Success = false
             };
 
-            if (movieRating.Rating <= 0 || movieRating.Rating > 5)
+            if (movieRating.Rating is <= 0 or > 5)
             {
                 _logger.LogWarning("Invalid rating value: {Rating}. Must be between 1 and 5.", movieRating.Rating);
                 response.Title = "Rating must be between 1 and 5";
@@ -40,48 +40,87 @@ namespace Movies.Application.Services
                 return response;
             }
 
-            var isMovieRatedByUser = await _ratingRepository.IsMovieRatedAsync(movieRating.MovieId, movieRating.UserId, token);
-            if (isMovieRatedByUser)
-            {
-                _logger.LogWarning("Title with ID: {MovieId} is already rated by user {UserId}.", movieRating.MovieId, movieRating.UserId);
-                response.Title = "Title is already rated";
-            }
-
             try
             {
-                bool result = false;
+                var isMovieRated = await _ratingRepository.IsMovieRatedAsync(movieRating.MovieId, movieRating.UserId, token);
 
-                if (isMovieRatedByUser)
+                if (isMovieRated)
                 {
-                    if (isAdmin)
+                    if (movieRating.Id != null)
                     {
-                        if (await _ratingRepository.ExistsByIdAsync(movieRating.Id, token))
+                        var alreadyRatedUserId = await _ratingRepository.MovieRatedAsync(movieRating.Id,
+                            movieRating.MovieId, movieRating.UserId, token);
+                        var alreadyRatedAdminUserId = userId != null
+                            ? await _ratingRepository.MovieRatedAsync(movieRating.Id, movieRating.MovieId, userId,
+                                token)
+                            : null;
+
+                        if (alreadyRatedUserId != null)
                         {
-                            result = await _ratingRepository.UpdateMovieRatedAsync(movieRating, token);
-                            if (result)
+                            var updateResult = await _ratingRepository.UpdateMovieRatedAsync(movieRating, token);
+
+                            if (updateResult)
                             {
-                                _logger.LogInformation("Admin user {UserId} updated title rating for {MovieId} to {Rating}.", movieRating.UserId, movieRating.MovieId, movieRating.Rating);
+                                _logger.LogInformation(
+                                    "Updated title rating for title {MovieId} to {Rating} by user {UserId}.",
+                                    movieRating.MovieId, movieRating.Rating, movieRating.UserId);
                                 response.Title = "Title rating updated successfully.";
                                 response.Success = true;
+
+                                return response;
+                            }
+                            else
+                            {
+                                _logger.LogWarning(
+                                    "Failed to update title rating for title {MovieId} by user {UserId}.",
+                                    movieRating.MovieId, movieRating.UserId);
+                                response.Title = "Title already rated.";
+                                return response;
+                            }
+                        }
+                        else if (alreadyRatedAdminUserId != null && isAdmin)
+                        {
+                            var updateResult = await _ratingRepository.UpdateMovieRatedAsync(movieRating, token);
+
+                            if (updateResult)
+                            {
+                                _logger.LogInformation(
+                                    "Updated title rating for title {MovieId} to {Rating} by user {UserId}.",
+                                    movieRating.MovieId, movieRating.Rating, movieRating.UserId);
+                                response.Title = "Title rating updated successfully.";
+                                response.Success = true;
+                                return response;
+                            }
+                            else
+                            {
+                                _logger.LogWarning("Failed to update title rating for title {MovieId} by user {UserId}.",
+                                    movieRating.MovieId, movieRating.UserId);
+                                response.Title = "Movie already rated.";
                                 return response;
                             }
                         }
                     }
                     else
                     {
-                        _logger.LogWarning("User {UserId} failed to update title {MovieId}.", movieRating.UserId, movieRating.MovieId);
-                        response.Title = "User cannot update rating";
-                        return response;
+                        response.Success = false;
+                        response.Title = "Title already rated";
                     }
                 }
                 else
                 {
-                    result = await _ratingRepository.RateMovieAsync(movieRating, token);
-                    if (result)
+                    var addResult = await _ratingRepository.RateMovieAsync(movieRating, token);
+
+                    if (addResult)
                     {
                         _logger.LogInformation("User {UserId} rated title {MovieId} with rating {Rating}.", movieRating.UserId, movieRating.MovieId, movieRating.Rating);
                         response.Title = "Title rated successfully.";
                         response.Success = true;
+                        return response;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Failed to add title rating for title {MovieId} by user {UserId}.", movieRating.MovieId, movieRating.UserId);
+                        response.Title = "Failed to add title rating.";
                         return response;
                     }
                 }
@@ -90,11 +129,10 @@ namespace Movies.Application.Services
             {
                 _logger.LogError(ex, "An error occurred while processing the rating for title {MovieId} by user {UserId}.", movieRating.MovieId, movieRating.UserId);
                 response.Title = "An error occurred while processing the rating for the title.";
+                return response;
             }
-
             return response;
         }
-
 
         public async Task<ResponseModel<string>> DeleteRatingAsync(Guid movieId, string userId, CancellationToken token = default)
         {
@@ -134,6 +172,7 @@ namespace Movies.Application.Services
             try
             {
                 var ratings = await _ratingRepository.GetRatingsForUserAsync(userId, token);
+
                 if (ratings != null)
                 {
                     _logger.LogInformation("Retrieved ratings for user {UserId}.", userId);

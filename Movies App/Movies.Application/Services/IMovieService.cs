@@ -11,7 +11,7 @@ namespace Movies.Application.Services
 
         Task<ResponseModel<string>> CreateTopMovieAsync(List<TopMovie> topMovies, CancellationToken token = default);
         Task<IEnumerable<Movie>> GetMostRecentMovieAsync(bool isAdmin = false, string userId = null, CancellationToken token = default);
-        Task<Movie> UpdateAsync(Movie movie, Guid? userId = default, CancellationToken token = default);
+        Task<ResponseModel<Movie>> UpdateAsync(Movie movie, Guid? userId = default, CancellationToken token = default);
         Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default);
         Task<int> GetCountAsync(string? title, string? yearOfRelease, CancellationToken token = default);
         Task<IEnumerable<Movie>> GetSearchedMoviesAsync(string textToSearchMovie);

@@ -50,7 +50,7 @@ namespace Movies.Application.Services
             if (movieExist)
             {
                 response.Success = false;
-                response.Title = "Movie already exist.";
+                response.Title = "Title already exist.";
                 return response;
             }
 
@@ -73,7 +73,7 @@ namespace Movies.Application.Services
             {
                 response.Success = false;
                 response.Title = ex.Message;
-                _logger.LogError(ex, "An error occurred while creating movie: {Title}", movie.Title);
+                _logger.LogError(ex, "An error occurred while creating title: {Title}", movie.Title);
                 throw;
             }
 
@@ -131,7 +131,7 @@ namespace Movies.Application.Services
                 var movie = await _movieRepository.GetByIdAsync(id, isAdmin, userId, token);
                 var avgUserRating = await _ratingRepository.GetAvgUserMovieRatingAsync(movie.Id);
                 movie.UserRating = avgUserRating;
-                _logger.LogInformation("Successfully retrieved titles by ID: {Id}", id);
+                _logger.LogInformation("Successfully retrieved title by ID: {Id}", id);
                 return movie;
             }
             catch (Exception ex)
@@ -183,6 +183,7 @@ namespace Movies.Application.Services
             try
             {
                 var movieList = await _movieRepository.GetTopMovieAsync(isAdmin, userId, token);
+
                 foreach (var item in movieList)
                 {
                     var avgMovieRating = await _ratingRepository.GetAvgUserMovieRatingAsync(item.Id);
@@ -208,6 +209,7 @@ namespace Movies.Application.Services
             try
             {
                 var movies = await _movieRepository.GetMostRecentMovieAsync(isAdmin, userId, token);
+
                 foreach (var item in movies)
                 {
                     var avgMovieRating = await _ratingRepository.GetAvgUserMovieRatingAsync(item.Id);
@@ -224,28 +226,50 @@ namespace Movies.Application.Services
             }
         }
 
-        public async Task<Movie> UpdateAsync(Movie movie, Guid? userId = default, CancellationToken token = default)
+        public async Task<ResponseModel<Movie>> UpdateAsync(Movie movie, Guid? userId = default, CancellationToken token = default)
         {
+            var response = new ResponseModel<Movie>
+            {
+                Title = "Oops! Something went wrong. Please try again.",
+                Success = false
+            };
+
             try
             {
-                var movieDetail = await _movieRepository.GetByIdAsync(movie.Id);
+                var movieDetail = await _movieRepository.GetByIdAsync(movie.Id, token: token);
 
                 if (movieDetail == null)
                 {
                     _logger.LogWarning("Title with ID: {Id} does not exist.", movie.Id);
-                    throw new KeyNotFoundException($"Title with ID '{movie.Id}' does not exist.");
+                    response.Title = "Title does not exist.";
+                }
+                else
+                {
+                    movie.Title = movieDetail.Title;
+                    movie.Released = movieDetail.Released;
+                    movie.YearOfRelease = movieDetail.YearOfRelease;
+
+                    await _movieValidator.ValidateAndThrowAsync(movie, cancellationToken: token);
+
+                    var isUpdated = await _movieRepository.UpdateAsync(movie, token);
+
+                    if (isUpdated)
+                    {
+                        _logger.LogInformation("Successfully updated title: {Title} (ID: {Id})", movie.Id);
+                        var updatedMovie = await _movieRepository.GetByIdAsync(movie.Id, token: token);
+                        response.Title = "Successfully updated title.";
+                        response.Success = true;
+                        response.Content = updatedMovie;
+                    }
                 }
 
-                movieDetail.UpdatedAt = DateTime.UtcNow;
-                movieDetail.Plot = movie.Plot;
-
-                await _movieRepository.UpdateAsync(movieDetail, token);
-                _logger.LogInformation("Successfully updated title: {Title} (ID: {Id})", movieDetail.Title, movie.Id);
-
-                return movieDetail;
+                return response;
             }
+
             catch (Exception ex)
             {
+                response.Success = false;
+                response.Title = ex.Message;
                 _logger.LogError(ex, "An error occurred while updating title: {Title}");
                 throw;
             }

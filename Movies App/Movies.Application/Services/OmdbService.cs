@@ -26,13 +26,16 @@ namespace Movies.Application.Services
             {
                 var url = $"http://www.omdbapi.com/?t={title}&y={year}&apikey=b4de2ce9";
                 var response = await _httpClient.GetAsync(url, token);
+
                 if (!response.IsSuccessStatusCode)
                 {
                     _logger.LogError("Failed to get title from OMDB API. Status code: {StatusCode}", response.StatusCode);
                     return null;
                 }
+
                 var content = await response.Content.ReadAsStringAsync();
                 var omdbResponse = JsonSerializer.Deserialize<OmdbResponse>(content);
+
                 if (omdbResponse.Title != null)
                 {
                     res.Content = omdbResponse;
