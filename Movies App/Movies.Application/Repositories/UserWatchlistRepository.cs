@@ -13,10 +13,6 @@ namespace Movies.Application.Repositories
         {
             _dbContext = dbcontext;
         }
-        public Task<bool> CreateAsync(UserWatchlist movie, CancellationToken token = default)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
         {

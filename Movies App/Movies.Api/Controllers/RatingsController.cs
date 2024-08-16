@@ -30,7 +30,7 @@ namespace Movies.Api.Controllers
             var userId = HttpContext.GetUserId().ToString();
             var isAdmin = HttpContext.CheckAdmin();
             var mapReq = ContractMapping.MapToRatingRequest(ratingId, movieId, rating, userId);
-            var result = await _ratingService.RateMovieAsync(mapReq, isAdmin, token);
+            var result = await _ratingService.RateMovieAsync(mapReq, isAdmin, token: token);
 
             response.Success = result.Success;
             response.Title = result.Title;
