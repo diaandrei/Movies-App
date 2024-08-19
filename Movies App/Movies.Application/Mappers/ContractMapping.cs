@@ -62,7 +62,7 @@ namespace Movies.Application
 
         public static List<Genre> PopulateGenresFromOmdb(this Movie movie, string genresCommaSeparated)
         {
-            List<Genre> Genres = new List<Genre>();
+            var Genres = new List<Genre>();
 
             if (string.IsNullOrWhiteSpace(genresCommaSeparated))
             {
@@ -74,6 +74,7 @@ namespace Movies.Application
             foreach (var genreName in genreNames)
             {
                 var trimmedGenreName = genreName.Trim();
+
                 if (!string.IsNullOrWhiteSpace(trimmedGenreName))
                 {
                     var genre = new Genre
@@ -90,11 +91,11 @@ namespace Movies.Application
 
         public static List<Cast> PopulateCastFromOmdb(this Movie movie, string castCommaSeparated)
         {
-            List<Cast> casts = new List<Cast>();
+            var casts = new List<Cast>();
 
             if (string.IsNullOrWhiteSpace(castCommaSeparated))
             {
-                return null;
+                return null!;
             }
 
             var genreNames = castCommaSeparated.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -116,7 +117,7 @@ namespace Movies.Application
 
             return casts;
         }
-        public static MovieResponse MapToResponse(this Movie movie, string userId = null)
+        public static MovieResponse MapToResponse(this Movie movie, string userId = null!)
         {
 
             return new MovieResponse
@@ -176,8 +177,8 @@ namespace Movies.Application
                 }).ToList(),
 
                 Rating = movie.Rating,
-                IsUserRated = movie.MovieRatings.Count > 0 ? true : false,
-                IsMovieWatchlist = movie.UserWatchlists.Count > 0 ? true : false,
+                IsUserRated = movie.MovieRatings.Count > 0,
+                IsMovieWatchlist = movie.UserWatchlists.Count > 0,
                 UserRating = movie.UserRating,
                 CreatedAt = movie.CreatedAt,
                 UpdatedAt = movie.UpdatedAt,
@@ -207,70 +208,68 @@ namespace Movies.Application
                 Page = page,
                 PageSize = pageSize,
                 Total = totalCount
-
             };
-
         }
 
-        public static MovieResponseDto MapToResponseDto(this MovieDto movieDTO)
+        public static MovieResponseDto MapToResponseDto(this MovieDto movieDto)
         {
             return new MovieResponseDto
             {
-                Id = movieDTO.Id,
-                UserWatchlistId = movieDTO.UserWatchlistId,
-                Title = movieDTO.Title,
-                Released = movieDTO.Released,
-                Runtime = movieDTO.Runtime,
-                YearOfRelease = movieDTO.YearOfRelease,
-                Rated = movieDTO.Rated,
-                Plot = movieDTO.Plot,
-                Awards = movieDTO.Awards,
-                Poster = movieDTO.Poster,
-                TotalSeasons = movieDTO.TotalSeasons,
-                IsActive = movieDTO.IsActive,
-                Rating = movieDTO.Rating,
-                UserRating = movieDTO.UserRating,
-                CreatedAt = movieDTO.CreatedAt,
-                UpdatedAt = movieDTO.UpdatedAt,
-                Cast = movieDTO.Cast.Select(c => new CastResponseDto
+                Id = movieDto.Id,
+                UserWatchlistId = movieDto.UserWatchlistId,
+                Title = movieDto.Title,
+                Released = movieDto.Released,
+                Runtime = movieDto.Runtime,
+                YearOfRelease = movieDto.YearOfRelease,
+                Rated = movieDto.Rated,
+                Plot = movieDto.Plot,
+                Awards = movieDto.Awards,
+                Poster = movieDto.Poster,
+                TotalSeasons = movieDto.TotalSeasons,
+                IsActive = movieDto.IsActive,
+                Rating = movieDto.Rating,
+                UserRating = movieDto.UserRating,
+                CreatedAt = movieDto.CreatedAt,
+                UpdatedAt = movieDto.UpdatedAt,
+                Cast = movieDto.Cast.Select(c => new CastResponseDto
                 {
                     Id = c.Id,
                     Name = c.Name,
                     Role = c.Role
                 }).ToList(),
 
-                Genres = movieDTO.Genres.Select(g => new GenreResponseDto
+                Genres = movieDto.Genres.Select(g => new GenreResponseDto
                 {
                     Id = g.Id,
                     Name = g.Name
                 }).ToList(),
 
-                ExternalRatings = movieDTO.ExternalRatings.Select(er => new ExternalRatingResponseDto
+                ExternalRatings = movieDto.ExternalRatings.Select(er => new ExternalRatingResponseDto
                 {
                     Id = er.Id,
                     Source = er.Source,
                 }).ToList(),
 
-                OmdbRatings = movieDTO.OmdbRatings.Select(om => new OmdbRatingResponseDto
+                OmdbRatings = movieDto.OmdbRatings.Select(om => new OmdbRatingResponseDto
                 {
                     Id = om.Id,
                     Source = om.Source,
                     Value = om.Value
                 }).ToList(),
 
-                MovieRatings = movieDTO.MovieRatings.Select(mr => new MovieRatingResponseDto
+                MovieRatings = movieDto.MovieRatings.Select(mr => new MovieRatingResponseDto
                 {
                     Id = mr.Id,
-                    Rating = mr.Rating,
+                    Rating = mr.Rating
                 }).ToList(),
-                FirstAddedToWatchlistAt = FirstAddedToWatchlistAgo(movieDTO.ApplicationUser?.FirstAddedToWatchlistAt),
-                UserId = movieDTO.ApplicationUser.Id,
+                FirstAddedToWatchlistAt = FirstAddedToWatchlistAgo(movieDto.ApplicationUser?.FirstAddedToWatchlistAt),
+                UserId = movieDto.ApplicationUser.Id,
                 IsMovieWatchlist = true
             };
         }
 
         public static MoviesResponse MapToResponse(this IEnumerable<Movie> movies,
-            int page, int pageSize, int totalCount, string userId = null)
+            int page, int pageSize, int totalCount, string userId = null!)
         {
             return new MoviesResponse
             {
@@ -281,12 +280,48 @@ namespace Movies.Application
             };
         }
 
-        public static Movie MapToMovie(this UpdateMovieRequest request, Guid id)
+        public static Movie MapToMovie(this UpdateMovieRequest request, Guid id, string userId)
         {
             return new Movie
             {
                 Id = id,
                 Plot = request.Plot,
+
+                Cast = request.Cast.Select(x => new Cast
+                {
+                    Id = Guid.NewGuid(),
+                    Name = x.Name,
+                    Role = x.Role
+                }).ToList(),
+
+                ExternalRatings = request.ExternalRatings.Select(x => new ExternalRating
+                {
+                    Id = Guid.NewGuid(),
+                    Source = x.Source!,
+                    Rating = x.Rating
+                }).ToList(),
+
+                OmdbRatings = request.OmdbRatings.Select(x => new OmdbRating
+                {
+                    Id = Guid.NewGuid(),
+                    Source = x.Source!,
+                    Value = x.Value,
+
+                }).ToList(),
+
+                MovieRatings = request.MovieRatings.Select(x => new MovieRating
+                {
+                    Id = Guid.NewGuid(),
+                    Rating = x.Rating,
+                    MovieId = x.MovieId,
+                    UserId = userId,
+                    UpdatedAt = DateTime.UtcNow
+                }).ToList(),
+
+                Rating = request.Rating,
+                UserRating = request.UserRating,
+                CreatedAt = request.CreatedAt,
+                UpdatedAt = request.UpdatedAt
             };
         }
         public static IEnumerable<MovieRatingResponse> MapToResponse(this IEnumerable<MovieRating> ratings)

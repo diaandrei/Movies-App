@@ -36,6 +36,7 @@ namespace Movies.Application.Services
                 Title = "Oops! Something went wrong. Please retry in a moment.",
                 Success = false
             };
+
             var omdbResponse = await _omdbService.GetMovieAsync(movie.Title, movie.YearOfRelease.ToString(), token);
 
             if (omdbResponse.Success == false || string.IsNullOrEmpty(omdbResponse.Content.Title))
@@ -45,7 +46,7 @@ namespace Movies.Application.Services
                 return response;
             }
 
-            var movieExist = await _movieRepository.GetMovieByTitle(omdbResponse.Content.Title);
+            var movieExist = await _movieRepository.GetMovieByTitle(omdbResponse.Content.Title, token);
 
             if (movieExist)
             {
@@ -58,6 +59,7 @@ namespace Movies.Application.Services
             var movieWithCast = movie.PopulateCastFromOmdb(omdbResponse.Content.Actors);
 
             movie = movie.PopulateValuesFromOmdb(omdbResponse.Content);
+
             await _movieValidator.ValidateAndThrowAsync(movie, cancellationToken: token);
 
             try
@@ -66,6 +68,7 @@ namespace Movies.Application.Services
                     token);
                 response.Title = $"{movie.Title} title created Successfully";
                 response.Success = true;
+                response.Content = movie.Id.ToString();
                 _logger.LogInformation("Successfully created title: {Title} (ID: {Id})", movie.Title, movie.Id);
 
             }
@@ -102,7 +105,7 @@ namespace Movies.Application.Services
 
                 if (existingMovies.Count() == topMovies.Count)
                 {
-                    var movie = await _movieRepository.CreateTopMovieAsync(topMovies);
+                    var movie = await _movieRepository.CreateTopMovieAsync(topMovies, token);
 
                     if (movie)
                     {
@@ -129,7 +132,7 @@ namespace Movies.Application.Services
             try
             {
                 var movie = await _movieRepository.GetByIdAsync(id, isAdmin, userId, token);
-                var avgUserRating = await _ratingRepository.GetAvgUserMovieRatingAsync(movie.Id);
+                var avgUserRating = await _ratingRepository.GetAvgUserMovieRatingAsync(movie.Id, token);
                 movie.UserRating = avgUserRating;
                 _logger.LogInformation("Successfully retrieved title by ID: {Id}", id);
                 return movie;
@@ -142,7 +145,7 @@ namespace Movies.Application.Services
         }
 
         public async Task<IEnumerable<Movie>> GetAllAsync(GetAllMoviesOptions options, bool isFavourite, bool isAdmin,
-            string userId = null, CancellationToken token = default)
+            string userId = null!, CancellationToken token = default)
         {
             await _optionsValidator.ValidateAndThrowAsync(options, token);
 
@@ -151,7 +154,7 @@ namespace Movies.Application.Services
                 var movies = await _movieRepository.GetAllAsync(options, isAdmin, userId, token);
                 foreach (var item in movies)
                 {
-                    var avgMovieRating = await _ratingRepository.GetAvgUserMovieRatingAsync(item.Id);
+                    var avgMovieRating = await _ratingRepository.GetAvgUserMovieRatingAsync(item.Id, token);
                     item.UserRating = avgMovieRating;
                 }
 
@@ -172,7 +175,7 @@ namespace Movies.Application.Services
         }
 
         public async Task<ResponseModel<IEnumerable<Movie>>> GetTopMovieAsync(bool isAdmin = false,
-            string userId = null, CancellationToken token = default)
+            string userId = null!, CancellationToken token = default)
         {
             var response = new ResponseModel<IEnumerable<Movie>>
             {
@@ -203,7 +206,7 @@ namespace Movies.Application.Services
             return response;
         }
 
-        public async Task<IEnumerable<Movie>> GetMostRecentMovieAsync(bool isAdmin = false, string userId = null,
+        public async Task<IEnumerable<Movie>> GetMostRecentMovieAsync(bool isAdmin = false, string userId = null!,
             CancellationToken token = default)
         {
             try
@@ -212,7 +215,7 @@ namespace Movies.Application.Services
 
                 foreach (var item in movies)
                 {
-                    var avgMovieRating = await _ratingRepository.GetAvgUserMovieRatingAsync(item.Id);
+                    var avgMovieRating = await _ratingRepository.GetAvgUserMovieRatingAsync(item.Id, token);
                     item.UserRating = avgMovieRating;
                 }
 
@@ -313,13 +316,13 @@ namespace Movies.Application.Services
             }
         }
 
-        public async Task<IEnumerable<Movie>> GetSearchedMoviesAsync(string? textToSearchMovies)
+        public async Task<IEnumerable<Movie>> GetSearchedMoviesAsync(string? textToSearchMovie)
         {
             try
             {
-                var moviesData = await _movieRepository.GetSearchedMoviesAsync(textToSearchMovies);
-                _logger.LogInformation($"Successfully retrieved titles with searchText: {textToSearchMovies}",
-                    textToSearchMovies);
+                var moviesData = await _movieRepository.GetSearchedMoviesAsync(textToSearchMovie);
+                _logger.LogInformation($"Successfully retrieved titles with searchText: {textToSearchMovie}",
+                    textToSearchMovie);
                 return moviesData;
             }
             catch (Exception ex)

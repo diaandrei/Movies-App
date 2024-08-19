@@ -10,9 +10,10 @@ namespace Movies.Application.Services
         private HttpClient _httpClient;
         private readonly ILogger<OmdbService> _logger;
 
-        public OmdbService(ILogger<OmdbService> logger)
+        public OmdbService(ILogger<OmdbService> logger, HttpClient httpClient)
         {
             _logger = logger;
+            _httpClient = httpClient;
         }
 
         public async Task<ResponseModel<OmdbResponse>> GetMovieAsync(string title, string year, CancellationToken token)
@@ -30,7 +31,7 @@ namespace Movies.Application.Services
                 if (!response.IsSuccessStatusCode)
                 {
                     _logger.LogError("Failed to get title from OMDB API. Status code: {StatusCode}", response.StatusCode);
-                    return null;
+                    return null!;
                 }
 
                 var content = await response.Content.ReadAsStringAsync();

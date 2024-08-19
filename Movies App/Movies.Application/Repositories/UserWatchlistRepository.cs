@@ -129,7 +129,7 @@ namespace Movies.Application.Repositories
                     Id = mr.Id,
                     Rating = mr.Rating,
                 }).ToList(),
-                ApplicationUser = user
+                ApplicationUser = user!
             }).ToList();
 
             return movieDTOs;
@@ -158,13 +158,14 @@ namespace Movies.Application.Repositories
                 return movieEntry.Entity;
             }
 
-            return null;
+            return null!;
         }
 
         public async Task<bool> CountUserWatchlistAsync(string userId, CancellationToken token = default)
         {
             var count = await _dbContext.UserWatchlists
             .CountAsync(uwl => uwl.UserId == userId, token);
+
             return count == 1;
         }
     }

@@ -9,25 +9,14 @@ namespace Movies.Application.Services
     public class UserWatchlistService : IUserWatchlistService
     {
         private readonly IUserWatchlistRepository _userWatchlistRepository;
-        private readonly IMovieRepository _movieRepository;
-        private readonly IRatingRepository _ratingRepository;
-
         private readonly ILogger<UserWatchlistService> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserWatchlistService(IUserWatchlistRepository userWatchlistRepository, ILogger<UserWatchlistService> logger, UserManager<ApplicationUser> userManager,
-            IMovieRepository movieRepository, IRatingRepository ratingRepository)
+        public UserWatchlistService(IUserWatchlistRepository userWatchlistRepository, ILogger<UserWatchlistService> logger, UserManager<ApplicationUser> userManager)
         {
             _userWatchlistRepository = userWatchlistRepository;
             _logger = logger;
             _userManager = userManager;
-            _movieRepository = movieRepository;
-            _ratingRepository = ratingRepository;
-        }
-
-        public async Task<bool> CreateAsync(UserWatchlist movie, CancellationToken token = default)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
@@ -65,22 +54,11 @@ namespace Movies.Application.Services
             }
         }
 
-
-        public async Task<MovieDto?> GetByIdAsync(Guid id, Guid? userId = null, CancellationToken token = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<int> GetCountAsync(string? title, string? yearOfRelease, CancellationToken token = default)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<UserWatchlist?> UpdateAsync(UserWatchlist movie, Guid? userId = null, CancellationToken token = default)
         {
             try
             {
-                var movieDetail = await _userWatchlistRepository.GetByIdAsync(movie.Id);
+                var movieDetail = await _userWatchlistRepository.GetByIdAsync(movie.Id, token: token);
 
                 if (movieDetail == null)
                 {
@@ -102,7 +80,6 @@ namespace Movies.Application.Services
             }
         }
 
-
         public async Task<ResponseModel<string>> AddMovieInWatchlistAsync(UserWatchlist userWatchlist)
         {
             var response = new ResponseModel<string>
@@ -121,6 +98,7 @@ namespace Movies.Application.Services
                     if (isFirstTimeUser)
                     {
                         var user = await _userManager.FindByIdAsync(userWatchlist.UserId);
+
                         if (user != null)
                         {
                             user.FirstAddedToWatchlistAt = movieAdded.CreatedAt;
@@ -152,7 +130,7 @@ namespace Movies.Application.Services
         private async Task<bool> IsFirstTimeUserInWatchlistAsync(string userId, CancellationToken token = default)
         {
             var count = await _userWatchlistRepository.CountUserWatchlistAsync(userId, token);
-            return count ? true : false;
+            return count;
         }
     }
 }
