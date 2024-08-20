@@ -19,14 +19,14 @@ namespace Movies.Api.Controllers
 
         [Authorize]
         [HttpGet(ApiEndpoints.Movies.Rate)]
-        public async Task<ResponseModel<string>> RateMovie(
-            Guid ratingId, Guid movieId, decimal rating, CancellationToken token)
+        public async Task<ResponseModel<string>> RateMovie(Guid ratingId, Guid movieId, decimal rating, CancellationToken token)
         {
             var response = new ResponseModel<string>
             {
                 Title = "Something went wrong.",
                 Success = false
             };
+
             var userId = HttpContext.GetUserId().ToString();
             var isAdmin = HttpContext.CheckAdmin();
             var mapReq = ContractMapping.MapToRatingRequest(ratingId, movieId, rating, userId);
@@ -35,7 +35,6 @@ namespace Movies.Api.Controllers
             response.Success = result.Success;
             response.Title = result.Title;
             response.Content = result.Content;
-
 
             return response;
         }
@@ -49,11 +48,14 @@ namespace Movies.Api.Controllers
                 Title = "Something went wrong.",
                 Success = false
             };
+
             var userId = HttpContext.GetUserId().ToString();
             var result = await _ratingService.DeleteRatingAsync(id, userId, token);
+
             response.Success = result.Success;
             response.Title = result.Title;
             response.Content = result.Content;
+
             return response;
         }
 
@@ -66,6 +68,7 @@ namespace Movies.Api.Controllers
                 Success = false,
                 Title = "Something went wrong."
             };
+
             var userId = HttpContext.GetUserId().ToString();
             var ratings = await _ratingService.GetRatingsForUserAsync(userId, token);
             var ratingResponse = ratings.Content.MapToResponse();

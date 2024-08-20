@@ -18,6 +18,7 @@
 
             public const string Rate = $"{Base}/{{id:guid}}/ratings";
             public const string DeleteRating = $"{Base}/{{id:guid}}/ratings";
+            public const string GetAllRatedMovies = $"{Base}/ratings/me";
 
             public const string Search = $"{Base}/search";
             public const string AddToWatchlist = $"{Base}/watchlist/{{id:guid}}";
