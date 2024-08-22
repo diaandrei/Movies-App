@@ -572,10 +572,18 @@ public class MovieRepository : IMovieRepository
     private async Task UpdateMovieBasicProperties(Movie existingMovie, Movie movie, CancellationToken token)
     {
         var db = await _dbContext.Movies.FindAsync(movie?.Id);
+        db.Title = !string.IsNullOrEmpty(movie!.Title) ? movie.Title : existingMovie.Title;
+        db.Released = !string.IsNullOrEmpty(movie.Released) ? movie.Released : existingMovie.Released;
+        db.Runtime = !string.IsNullOrEmpty(movie.Runtime) ? movie.Runtime : existingMovie.Runtime;
+        db.YearOfRelease = !string.IsNullOrEmpty(movie.YearOfRelease) ? movie.YearOfRelease : existingMovie.YearOfRelease;
+        db.Rated = !string.IsNullOrEmpty(movie.Rated) ? movie.Rated : existingMovie.Rated;
         db.Plot = !string.IsNullOrEmpty(movie.Plot) ? movie.Plot : existingMovie.Plot;
+        db.Awards = !string.IsNullOrEmpty(movie.Awards) ? movie.Awards : existingMovie.Awards;
+        db.Poster = !string.IsNullOrEmpty(movie.Poster) ? movie.Poster : existingMovie.Poster;
+        db.TotalSeasons = !string.IsNullOrEmpty(movie.TotalSeasons) ? movie.TotalSeasons : existingMovie.TotalSeasons;
         db.IsActive = movie.IsActive;
-        db.Rating = movie.Rating ?? existingMovie.Rating;
-        db.UserRating = movie.UserRating ?? existingMovie.UserRating;
+        db.Rating = movie.Rating.HasValue ? movie.Rating : existingMovie.Rating;
+        db.UserRating = movie.UserRating.HasValue ? movie.UserRating : existingMovie.UserRating;
         db.UpdatedAt = DateTime.UtcNow;
 
         await _dbContext.SaveChangesAsync(token);

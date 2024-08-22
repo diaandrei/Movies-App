@@ -285,7 +285,12 @@ namespace Movies.Application
             return new Movie
             {
                 Id = id,
+                Runtime = request.Runtime,
+                Rated = request.Rated,
                 Plot = request.Plot,
+                Awards = request.Awards,
+                Poster = request.Poster,
+                TotalSeasons = request.TotalSeasons,
 
                 Cast = request.Cast.Select(x => new Cast
                 {
@@ -293,14 +298,17 @@ namespace Movies.Application
                     Name = x.Name,
                     Role = x.Role
                 }).ToList(),
-
+                Genres = request.Genres.Select(x => new Genre
+                {
+                    Id = Guid.NewGuid(),
+                    Name = x.Name
+                }).ToList(),
                 ExternalRatings = request.ExternalRatings.Select(x => new ExternalRating
                 {
                     Id = Guid.NewGuid(),
                     Source = x.Source!,
                     Rating = x.Rating
                 }).ToList(),
-
                 OmdbRatings = request.OmdbRatings.Select(x => new OmdbRating
                 {
                     Id = Guid.NewGuid(),
@@ -308,7 +316,6 @@ namespace Movies.Application
                     Value = x.Value,
 
                 }).ToList(),
-
                 MovieRatings = request.MovieRatings.Select(x => new MovieRating
                 {
                     Id = Guid.NewGuid(),
@@ -317,13 +324,13 @@ namespace Movies.Application
                     UserId = userId,
                     UpdatedAt = DateTime.UtcNow
                 }).ToList(),
-
                 Rating = request.Rating,
                 UserRating = request.UserRating,
                 CreatedAt = request.CreatedAt,
                 UpdatedAt = request.UpdatedAt
             };
         }
+
         public static IEnumerable<MovieRatingResponse> MapToResponse(this IEnumerable<MovieRating> ratings)
         {
             return ratings.Select(x => new MovieRatingResponse
