@@ -129,6 +129,7 @@ namespace Movies.Api.Controllers
                             };
 
                             var token = TokenGenerator.GenerateToken(jwtReq);
+
                             LoginDto login = new LoginDto
                             {
                                 Token = token,
