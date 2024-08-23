@@ -161,17 +161,24 @@ namespace Movies.Application.Services
             return response;
         }
 
-        public async Task<ResponseModel<IEnumerable<MovieRating>>> GetRatingsForUserAsync(string userId,
-            CancellationToken token = default)
+        public async Task<ResponseModel<IEnumerable<MovieRating>>> GetRatingsForUserAsync(string userId, CancellationToken token = default)
         {
             var response = new ResponseModel<IEnumerable<MovieRating>>
             {
                 Title = "Oops! Something went wrong. Please retry in a moment.",
                 Success = false
             };
+
             try
             {
+                // Assuming you have a context with DbSet<MovieRating> and that MovieRating includes a navigation property to Movie
                 var ratings = await _ratingRepository.GetRatingsForUserAsync(userId, token);
+
+                // Optionally, include movie details here if not already included in the repository method
+                foreach (var rating in ratings)
+                {
+                    rating.Movie = await _movieRepository.GetByIdAsync(rating.MovieId, token: token);
+                }
 
                 if (ratings != null)
                 {
@@ -187,7 +194,9 @@ namespace Movies.Application.Services
                 response.Success = false;
                 response.Title = ex.Message;
             }
+
             return response;
         }
+
     }
 }

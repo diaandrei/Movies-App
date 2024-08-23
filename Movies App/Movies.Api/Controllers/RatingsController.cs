@@ -70,12 +70,18 @@ namespace Movies.Api.Controllers
             };
 
             var userId = HttpContext.GetUserId().ToString();
-            var ratings = await _ratingService.GetRatingsForUserAsync(userId, token);
-            var ratingResponse = ratings.Content.MapToResponse();
+            var ratingsResponse = await _ratingService.GetRatingsForUserAsync(userId, token);
 
-            response.Title = ratings.Title;
-            response.Success = ratings.Success;
-            response.Content = ratings.Content;
+            if (ratingsResponse.Content != null && ratingsResponse.Content.Any())
+            {
+                response.Success = true;
+                response.Title = "User Ratings";
+                response.Content = ratingsResponse.Content;
+            }
+            else
+            {
+                response.Title = "No ratings found.";
+            }
 
             return response;
         }

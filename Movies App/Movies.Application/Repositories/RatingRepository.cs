@@ -62,8 +62,14 @@ namespace Movies.Application.Repositories
             return await _dbcontext.SaveChangesAsync(token) > 0;
         }
 
-        public async Task<IEnumerable<MovieRating>> GetRatingsForUserAsync(string userId, CancellationToken token = default) =>
-            await _dbcontext.MovieRatings.Where(x => x.UserId == userId).ToListAsync(token);
+        public async Task<IEnumerable<MovieRating>> GetRatingsForUserAsync(string userId, CancellationToken token = default)
+        {
+            return await _dbcontext.MovieRatings
+                .Include(r => r.Movie)
+                .Where(x => x.UserId == userId)
+                .ToListAsync(token);
+        }
+
 
         public async Task<bool> IsMovieRatedAsync(Guid movieId, string userId, CancellationToken token = default)
         {

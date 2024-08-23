@@ -164,5 +164,12 @@ namespace Movies.Api.Controllers
 
             return response;
         }
+
+        [AllowAnonymous]
+        [HttpGet("test-deployment")]
+        public IActionResult TestDeployment()
+        {
+            return Ok(new { Success = true, Message = "Deployment is successful!" });
+        }
     }
 }
