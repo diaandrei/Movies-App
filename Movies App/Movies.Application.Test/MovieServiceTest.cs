@@ -94,6 +94,7 @@ namespace Movies.Application.Test
         public void TearDown()
         {
             //_context.Database.EnsureDeleted();
+            _context?.Dispose();
         }
 
         [Test]

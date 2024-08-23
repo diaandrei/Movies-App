@@ -10,10 +10,9 @@ namespace Movies.Application.Services
         private HttpClient _httpClient;
         private readonly ILogger<OmdbService> _logger;
 
-        public OmdbService(ILogger<OmdbService> logger, HttpClient httpClient)
+        public OmdbService(ILogger<OmdbService> logger)
         {
             _logger = logger;
-            _httpClient = httpClient;
         }
 
         public async Task<ResponseModel<OmdbResponse>> GetMovieAsync(string title, string year, CancellationToken token)
