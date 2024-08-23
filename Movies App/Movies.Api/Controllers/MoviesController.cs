@@ -106,7 +106,7 @@ namespace Movies.Api.Controllers
                 var isUserAuthenticated = HttpContext.IsUserAuthenticated(out var userId);
                 var movies = isUserAuthenticated
                     ? await _movieService.GetAllAsync(options, false, false, userId.ToString(), token)
-                    : await _movieService.GetAllAsync(options, false, false, null, token);
+                    : await _movieService.GetAllAsync(options, false, false, null!, token);
 
                 if (movies != null)
                 {
@@ -195,7 +195,7 @@ namespace Movies.Api.Controllers
                 var options = request.MapToOptions();
                 var result = isUserAuthenticated
                     ? await _movieService.GetAllAsync(options, true, isAdmin, userId.ToString(), token)
-                    : await _movieService.GetAllAsync(options, true, false, null, token);
+                    : await _movieService.GetAllAsync(options, true, false, null!, token);
 
                 if (result != null)
                 {

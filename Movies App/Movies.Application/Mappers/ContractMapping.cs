@@ -62,7 +62,7 @@ namespace Movies.Application
 
         public static List<Genre> PopulateGenresFromOmdb(this Movie movie, string genresCommaSeparated)
         {
-            var Genres = new List<Genre>();
+            List<Genre> Genres = new List<Genre>();
 
             if (string.IsNullOrWhiteSpace(genresCommaSeparated))
             {
@@ -91,7 +91,7 @@ namespace Movies.Application
 
         public static List<Cast> PopulateCastFromOmdb(this Movie movie, string castCommaSeparated)
         {
-            var casts = new List<Cast>();
+            List<Cast> casts = new List<Cast>();
 
             if (string.IsNullOrWhiteSpace(castCommaSeparated))
             {
@@ -177,8 +177,8 @@ namespace Movies.Application
                 }).ToList(),
 
                 Rating = movie.Rating,
-                IsUserRated = movie.MovieRatings.Count > 0,
-                IsMovieWatchlist = movie.UserWatchlists.Count > 0,
+                IsUserRated = movie.MovieRatings.Count > 0 ? true : false,
+                IsMovieWatchlist = movie.UserWatchlists.Count > 0 ? true : false,
                 UserRating = movie.UserRating,
                 CreatedAt = movie.CreatedAt,
                 UpdatedAt = movie.UpdatedAt,
@@ -262,6 +262,7 @@ namespace Movies.Application
                     Id = mr.Id,
                     Rating = mr.Rating
                 }).ToList(),
+
                 FirstAddedToWatchlistAt = FirstAddedToWatchlistAgo(movieDto.ApplicationUser?.FirstAddedToWatchlistAt),
                 UserId = movieDto.ApplicationUser.Id,
                 IsMovieWatchlist = true
