@@ -107,13 +107,13 @@ public class MovieRepository : IMovieRepository
         return true;
     }
 
-    public async Task<Movie> GetByIdAsync(Guid id, bool isAdmin = false, string userId = null, CancellationToken token = default)
+    public async Task<Movie> GetByIdAsync(Guid id, bool isAdmin = false, string userId = null!, CancellationToken token = default)
     {
         var movie = await _dbContext.Movies
             .Where(x => x.Id == id)
             .FirstOrDefaultAsync(token);
 
-        if (movie == null) return null;
+        if (movie == null) return null!;
 
         var casts = await _dbContext.MovieCast
             .Where(mc => mc.MovieId == id)
@@ -147,6 +147,7 @@ public class MovieRepository : IMovieRepository
             .Where(or => or.MovieId == id)
             .Select(or => new OmdbRating
             {
+                Id = or.Id,
                 Source = or.Source,
                 Value = or.Value
             })
