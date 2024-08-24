@@ -171,10 +171,8 @@ namespace Movies.Application.Services
 
             try
             {
-                // Assuming you have a context with DbSet<MovieRating> and that MovieRating includes a navigation property to Movie
                 var ratings = await _ratingRepository.GetRatingsForUserAsync(userId, token);
 
-                // Optionally, include movie details here if not already included in the repository method
                 foreach (var rating in ratings)
                 {
                     rating.Movie = await _movieRepository.GetByIdAsync(rating.MovieId, token: token);
@@ -197,6 +195,5 @@ namespace Movies.Application.Services
 
             return response;
         }
-
     }
 }

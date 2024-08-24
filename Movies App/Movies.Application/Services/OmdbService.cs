@@ -33,7 +33,7 @@ namespace Movies.Application.Services
                     return null!;
                 }
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await response.Content.ReadAsStringAsync(token);
                 var omdbResponse = JsonSerializer.Deserialize<OmdbResponse>(content);
 
                 if (omdbResponse.Title != null)

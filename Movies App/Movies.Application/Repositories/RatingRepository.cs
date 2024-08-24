@@ -24,7 +24,9 @@ namespace Movies.Application.Repositories
                 CreatedAt = movieRating.CreatedAt,
                 IsUserRated = true
             });
+
             await _dbcontext.SaveChangesAsync(token);
+
             return true;
         }
 
@@ -58,7 +60,7 @@ namespace Movies.Application.Repositories
                 .Where(x => x.Id == ratingId)
                 .FirstOrDefaultAsync(token);
 
-            _dbcontext.MovieRatings.RemoveRange(ratings);
+            _dbcontext.MovieRatings.RemoveRange(ratings!);
             return await _dbcontext.SaveChangesAsync(token) > 0;
         }
 
@@ -88,7 +90,7 @@ namespace Movies.Application.Repositories
             }
             else
             {
-                return null;
+                return null!;
             }
         }
 

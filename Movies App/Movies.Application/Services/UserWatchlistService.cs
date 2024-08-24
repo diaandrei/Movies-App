@@ -24,6 +24,7 @@ namespace Movies.Application.Services
             try
             {
                 var success = await _userWatchlistRepository.DeleteByIdAsync(id, token);
+
                 if (!success)
                 {
                     _logger.LogWarning("Title with ID: {Id} does not exist.", id);

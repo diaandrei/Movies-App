@@ -43,7 +43,6 @@ namespace Movies.Api.Controllers
             response.Content = result.Content;
 
             return response;
-
         }
 
         [AllowAnonymous]
@@ -64,12 +63,12 @@ namespace Movies.Api.Controllers
 
                 if (isAuthenticated)
                 {
-                    userId = authenticatedUserId.ToString();
+                    userId = authenticatedUserId.ToString()!;
                     isAdmin = HttpContext.CheckAdmin();
                 }
 
-                var movie = await _movieService.GetByIdAsync(id, isAdmin, userId, token);
-                var movieDetail = movie.MapToResponse(userId);
+                var movie = await _movieService.GetByIdAsync(id, isAdmin, userId!, token);
+                var movieDetail = movie.MapToResponse(userId!);
 
                 if (movieDetail != null)
                 {
@@ -105,13 +104,13 @@ namespace Movies.Api.Controllers
                 var options = request.MapToOptions();
                 var isUserAuthenticated = HttpContext.IsUserAuthenticated(out var userId);
                 var movies = isUserAuthenticated
-                    ? await _movieService.GetAllAsync(options, false, false, userId.ToString(), token)
+                    ? await _movieService.GetAllAsync(options, false, false, userId.ToString()!, token)
                     : await _movieService.GetAllAsync(options, false, false, null!, token);
 
                 if (movies != null)
                 {
                     var movieCount = await _movieService.GetCountAsync(options.Title, options.YearOfRelease, token);
-                    var moviesResponse = isUserAuthenticated ? movies.MapToResponse(request.Page, request.PageSize, movieCount, userId.ToString())
+                    var moviesResponse = isUserAuthenticated ? movies.MapToResponse(request.Page, request.PageSize, movieCount, userId.ToString()!)
                         : movies.MapToResponse(request.Page, request.PageSize, movieCount);
 
                     response.Success = true;
@@ -131,8 +130,6 @@ namespace Movies.Api.Controllers
 
             return response;
         }
-
-
 
         [HttpGet(ApiEndpoints.Movies.GetAdminMovies)]
         public async Task<ResponseModel<MoviesResponse>> GetAllMoviesAdmin([FromQuery] GetAllMoviesRequest request, CancellationToken token)
@@ -162,7 +159,6 @@ namespace Movies.Api.Controllers
                 {
                     response.Title = "No titles found.";
                 }
-
             }
             catch (Exception ex)
             {
@@ -194,13 +190,13 @@ namespace Movies.Api.Controllers
                 }
                 var options = request.MapToOptions();
                 var result = isUserAuthenticated
-                    ? await _movieService.GetAllAsync(options, true, isAdmin, userId.ToString(), token)
+                    ? await _movieService.GetAllAsync(options, true, isAdmin, userId.ToString()!, token)
                     : await _movieService.GetAllAsync(options, true, false, null!, token);
 
                 if (result != null)
                 {
                     var movieCount = await _movieService.GetCountAsync(options.Title, options.YearOfRelease, token);
-                    var moviesResponse = isUserAuthenticated ? result.MapToResponse(request.Page, request.PageSize, movieCount, userId.ToString())
+                    var moviesResponse = isUserAuthenticated ? result.MapToResponse(request.Page, request.PageSize, movieCount, userId.ToString()!)
                         : result.MapToResponse(request.Page, request.PageSize, movieCount);
                     response.Success = true;
                     response.Title = "Titles list";
@@ -210,7 +206,6 @@ namespace Movies.Api.Controllers
                 {
                     response.Title = "No titles found.";
                 }
-
             }
             catch (Exception ex)
             {
@@ -253,7 +248,6 @@ namespace Movies.Api.Controllers
                     response.Success = false;
                     response.Title = "Unable to update title: Unauthorized access.";
                 }
-
             }
             catch (Exception ex)
             {
@@ -345,7 +339,7 @@ namespace Movies.Api.Controllers
             {
                 if (!Guid.TryParse(movieId, out var guidMovieId))
                 {
-                    response.Title = "Invalid movie ID.";
+                    response.Title = "Invalid title id.";
                 }
 
                 var userId = HttpContext.GetUserId();
@@ -445,13 +439,13 @@ namespace Movies.Api.Controllers
                 }
 
                 var result = isUserAuthenticated
-                    ? await _movieService.GetTopMovieAsync(isAdmin, userId.ToString(), token)
+                    ? await _movieService.GetTopMovieAsync(isAdmin, userId.ToString()!, token)
                     : await _movieService.GetTopMovieAsync(false, null!, token);
 
                 if (result.Success)
                 {
                     var movieCount = await _movieService.GetCountAsync("", "", token);
-                    var moviesResponse = isUserAuthenticated ? result.Content.MapToResponse(1, 10, movieCount, userId.ToString())
+                    var moviesResponse = isUserAuthenticated ? result.Content.MapToResponse(1, 10, movieCount, userId.ToString()!)
                         : result.Content.MapToResponse(1, 10, movieCount);
                     response.Success = true;
                     response.Title = "Titles list";
@@ -470,7 +464,6 @@ namespace Movies.Api.Controllers
 
             return response;
         }
-
 
         [HttpPost(ApiEndpoints.Movies.CreateTopMovies)]
         public async Task<ResponseModel<string>> CreateTopMovies(List<Guid> movieIds, CancellationToken token)
@@ -497,7 +490,6 @@ namespace Movies.Api.Controllers
                 {
                     response.Title = "Titles not found.";
                 }
-
             }
             catch (Exception ex)
             {
@@ -526,7 +518,7 @@ namespace Movies.Api.Controllers
 
                 if (isAuthenticated)
                 {
-                    userId = authenticatedUserId.ToString();
+                    userId = authenticatedUserId.ToString()!;
                     isAdmin = HttpContext.CheckAdmin();
                 }
                 var movies = await _movieService.GetMostRecentMovieAsync(isAdmin, userId, token);

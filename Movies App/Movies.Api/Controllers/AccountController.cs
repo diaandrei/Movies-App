@@ -104,7 +104,7 @@ namespace Movies.Api.Controllers
                     var user = await _userManager.FindByEmailAsync(model.Email);
                     if (user != null)
                     {
-                        var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, false, false);
+                        var result = await _signInManager.PasswordSignInAsync(user.UserName!, model.Password, false, false);
 
                         if (result.Succeeded)
                         {
@@ -123,7 +123,7 @@ namespace Movies.Api.Controllers
                             {
                                 UserId = user.Id,
                                 Email = model.Email,
-                                RoleId = roleId,
+                                RoleId = roleId!,
                                 IsTrustedMember = user.IsTrustedMember,
                                 IsAdmin = user.IsAdmin,
                             };
@@ -135,7 +135,7 @@ namespace Movies.Api.Controllers
                                 Token = token,
                                 IsAdmin = user.IsAdmin,
                                 Name = user.FirstName + " " + user.LastName,
-                                Email = user.Email
+                                Email = user.Email!
                             };
                             response.Content = login;
                             response.Success = true;
@@ -163,13 +163,6 @@ namespace Movies.Api.Controllers
             }
 
             return response;
-        }
-
-        [AllowAnonymous]
-        [HttpGet("test-deployment")]
-        public IActionResult TestDeployment()
-        {
-            return Ok(new { Success = true, Message = "Deployment is successful!" });
         }
     }
 }

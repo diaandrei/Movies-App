@@ -31,7 +31,7 @@ namespace Movies.Application.Repositories
             return movie != null;
         }
 
-        public async Task<IEnumerable<MovieDto>> GetAllAsync(bool isAdmin, string userId = null, CancellationToken token = default)
+        public async Task<IEnumerable<MovieDto>> GetAllAsync(bool isAdmin, string userId = null!, CancellationToken token = default)
         {
             var userWatchlists = await _dbContext.UserWatchlists
                 .Where(uw => uw.UserId == userId)
@@ -75,6 +75,7 @@ namespace Movies.Application.Repositories
             .ToListAsync(token);
 
             ApplicationUser? user = null;
+
             if (!string.IsNullOrEmpty(userId))
             {
                 user = await _dbContext.Users

@@ -28,7 +28,7 @@
         {
             userId = null;
 
-            if (context.User.Identity.IsAuthenticated)
+            if (context.User.Identity!.IsAuthenticated)
             {
                 var userIdClaim = context.User.Claims.SingleOrDefault(x => x.Type == "userId");
                 if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var parsedUserId))

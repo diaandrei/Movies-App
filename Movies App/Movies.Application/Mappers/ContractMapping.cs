@@ -154,6 +154,7 @@ namespace Movies.Application
 
                 OmdbRatings = movie.OmdbRatings.Select(x => new OmdbRatingResponse
                 {
+                    Id = x.Id,
                     Source = x.Source,
                     Value = x.Value
                 }).ToList(),
@@ -164,7 +165,6 @@ namespace Movies.Application
                     UserId = x.UserId,
                     Rating = x.Rating,
                     IsUserRated = x.IsUserRated
-
                 }).ToList(),
 
                 UserWatchlists = movie.UserWatchlists.Select(x => new UserWatchlistResponse
@@ -173,7 +173,6 @@ namespace Movies.Application
                     UserId = x.UserId,
                     MovieId = x.MovieId,
                     CreatedAt = x.CreatedAt
-
                 }).ToList(),
 
                 Rating = movie.Rating,
@@ -264,7 +263,7 @@ namespace Movies.Application
                 }).ToList(),
 
                 FirstAddedToWatchlistAt = FirstAddedToWatchlistAgo(movieDto.ApplicationUser?.FirstAddedToWatchlistAt),
-                UserId = movieDto.ApplicationUser.Id,
+                UserId = movieDto.ApplicationUser!.Id,
                 IsMovieWatchlist = true
             };
         }
@@ -315,7 +314,6 @@ namespace Movies.Application
                     Id = Guid.NewGuid(),
                     Source = x.Source!,
                     Value = x.Value,
-
                 }).ToList(),
                 MovieRatings = request.MovieRatings.Select(x => new MovieRating
                 {

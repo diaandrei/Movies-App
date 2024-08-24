@@ -126,7 +126,7 @@ namespace Movies.Application.Services
             return responseModel;
         }
 
-        public async Task<Movie> GetByIdAsync(Guid id, bool isAdmin, string userId = null,
+        public async Task<Movie> GetByIdAsync(Guid id, bool isAdmin, string userId = null!,
             CancellationToken token = default)
         {
             try
@@ -152,6 +152,7 @@ namespace Movies.Application.Services
             try
             {
                 var movies = await _movieRepository.GetAllAsync(options, isAdmin, userId, token);
+
                 foreach (var item in movies)
                 {
                     var avgMovieRating = await _ratingRepository.GetAvgUserMovieRatingAsync(item.Id, token);
@@ -189,7 +190,7 @@ namespace Movies.Application.Services
 
                 foreach (var item in movieList)
                 {
-                    var avgMovieRating = await _ratingRepository.GetAvgUserMovieRatingAsync(item.Id);
+                    var avgMovieRating = await _ratingRepository.GetAvgUserMovieRatingAsync(item.Id, token);
                     item.UserRating = avgMovieRating;
                 }
 
