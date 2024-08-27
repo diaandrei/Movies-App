@@ -15,7 +15,7 @@ using Movies.Contracts.Responses;
 
 namespace Movies.Application.Test
 {
-    public class MovieServiceTest
+    public class MovieServiceTests
     {
         private MoviesDbContext _context;
         private IRatingRepository _ratingRepository;

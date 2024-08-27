@@ -16,6 +16,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.ObjectModel;
 using System.Text;
 using Movies.Application;
+using Movies.Application.Services;
 
 public class Program
 {
@@ -80,6 +81,12 @@ public class Program
 
             builder.Services.AddAuthorization();
             builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwagger>();
+
+            builder.Services.AddHttpClient<OmdbService>(client =>
+            {
+                client.BaseAddress = new Uri("https://api.omdbapi.com/");
+            });
+
             builder.Services.AddControllers();
 
             var configMap = new AutoMapper.MapperConfiguration(cfg =>

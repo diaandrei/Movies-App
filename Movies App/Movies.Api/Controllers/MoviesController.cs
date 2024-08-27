@@ -10,7 +10,9 @@ using Movies.Contracts.Responses;
 
 namespace Movies.Api.Controllers
 {
+    #if !DEBUG
     [Authorize]
+    #endif
     [ApiController]
     public class MoviesController : ControllerBase
     {
