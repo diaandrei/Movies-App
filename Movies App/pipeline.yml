@@ -40,8 +40,19 @@ stages:
             displayName: Build and Publish
 
           - script: |
+              echo "##[section]Printing current directory"
+              pwd  # Print the current working directory
+              echo "##[section]Listing directory contents"
+              ls -la  # List contents of the current directory
+              
               echo "##[section]Changing to the Movies.Application.Test project directory"
               cd "../Movies.Application.Test"  # Adjusted path to correctly navigate to the test project
+              
+              echo "##[section]Printing current directory after cd"
+              pwd  # Print the current working directory after cd
+              echo "##[section]Listing directory contents after cd"
+              ls -la  # List contents of the test directory to ensure it's the correct location
+
               echo "##[section]Running tests"
               dotnet test --configuration $(buildConfiguration) --no-build --verbosity normal
             displayName: Run Tests
