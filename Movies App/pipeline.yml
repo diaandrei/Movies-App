@@ -40,8 +40,10 @@ stages:
             displayName: Build and Publish
 
           - script: |
+              echo "##[section]Changing to the Movies.Application.Test project directory"
+              cd "../../Movies.Application.Test" 
               echo "##[section]Running tests"
-              dotnet test "Movies.Application.Test" --configuration $(buildConfiguration) --no-build --verbosity normal
+              dotnet test --configuration $(buildConfiguration) --no-build --verbosity normal
             displayName: Run Tests
 
 
