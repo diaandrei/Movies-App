@@ -34,17 +34,17 @@ stages:
 
           - script: |
               echo "##[section]Changing to the Movies.Api project directory"
-              cd "Movies App/Movies.Api" 
+              cd "Movies App/Movies.Api"
               echo "##[section]Building the project"
               dotnet publish --configuration $(buildConfiguration) --output $(System.DefaultWorkingDirectory)/build
             displayName: Build and Publish
 
           - script: |
               echo "##[section]Changing to the Movies.Application.Test project directory"
-              cd "$(System.DefaultWorkingDirectory)/Movies App/Movies.Application.Test"
+              cd "Movies App/Movies.Application.Test"
               
               echo "##[section]Running tests using the Movies.Application.Test.csproj"
-              dotnet test "Movies.Application.Test.csproj" --configuration $(buildConfiguration) --no-build --verbosity normal --logger:trx
+              dotnet test --no-restore --verbosity normal --configuration $(buildConfiguration)
             displayName: Run Tests
 
           - task: PublishPipelineArtifact@1
