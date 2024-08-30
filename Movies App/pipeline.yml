@@ -41,7 +41,7 @@ stages:
 
           - script: |
               echo "##[section]Changing to the Movies.Application.Test project directory"
-              cd "$(System.DefaultWorkingDirectory)/Movies App/Movies.Application.Test"
+              cd "Movies App/Movies.Application.Test"
               
               echo "##[section]Running tests using the .csproj file"
               dotnet test "Movies.Application.Test.csproj" --configuration $(buildConfiguration) --no-build --verbosity normal
