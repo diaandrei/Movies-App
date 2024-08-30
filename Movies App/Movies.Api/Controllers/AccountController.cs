@@ -148,7 +148,7 @@ namespace Movies.Api.Controllers
                     }
                     else
                     {
-                        response.Title = "User not found. Please check your details and try again.";
+                        response.Title = "Invalid email or password. Please try again.";
                     }
                 }
                 else
