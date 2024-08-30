@@ -27,7 +27,7 @@ namespace Movies.Application.Test
         public async Task RateMovieAsync_WhenRatingIsInvalid_ReturnsFailureResponse()
         {
             // Arrange
-            var movieRating = new MovieRating { Rating = 6 }; // Invalid rating
+            var movieRating = new MovieRating { Rating = 6 };
             var cancellationToken = new CancellationToken();
 
             // Act
@@ -124,7 +124,7 @@ namespace Movies.Application.Test
                 x => x.Log(
                     It.Is<LogLevel>(logLevel => logLevel == LogLevel.Information),
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("User") && v.ToString().Contains("rated title")),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("User") && v.ToString()!.Contains("rated title")),
                     It.IsAny<Exception>(),
                     It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)!),
                 Times.Once);
@@ -151,7 +151,7 @@ namespace Movies.Application.Test
                 x => x.Log(
                     It.Is<LogLevel>(logLevel => logLevel == LogLevel.Information),
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("User") && v.ToString().Contains("deleted rating")),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("User") && v.ToString()!.Contains("deleted rating")),
                     It.IsAny<Exception>(),
                     It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)!),
                 Times.Once);
@@ -182,7 +182,7 @@ namespace Movies.Application.Test
                 x => x.Log(
                     It.Is<LogLevel>(logLevel => logLevel == LogLevel.Information),
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Retrieved ratings for user")),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Retrieved ratings for user")),
                     It.IsAny<Exception>(),
                     It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)!),
                 Times.Once);
@@ -208,7 +208,7 @@ namespace Movies.Application.Test
                 x => x.Log(
                     It.Is<LogLevel>(logLevel => logLevel == LogLevel.Error),
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("An error occurred while retrieving ratings")),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("An error occurred while retrieving ratings")),
                     It.IsAny<Exception>(),
                     It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)!),
                 Times.Once);
