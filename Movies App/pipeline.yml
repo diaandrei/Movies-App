@@ -41,7 +41,7 @@ stages:
 
           - script: |
               echo "##[section]Running tests"
-              dotnet test --configuration $(buildConfiguration) --no-build --verbosity normal
+              dotnet test "path/to/your/test/project" --configuration $(buildConfiguration) --no-build --verbosity normal
             displayName: Run Tests
 
           - task: PublishPipelineArtifact@1
