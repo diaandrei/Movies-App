@@ -41,11 +41,10 @@ stages:
 
           - script: |
               echo "##[section]Changing to the Movies.Application.Test project directory"
-              cd "../../Movies.Application.Test" 
+              cd "../Movies.Application.Test"  # Adjusted path to correctly navigate to the test project
               echo "##[section]Running tests"
               dotnet test --configuration $(buildConfiguration) --no-build --verbosity normal
             displayName: Run Tests
-
 
           - task: PublishPipelineArtifact@1
             displayName: "Publish Artifact"
