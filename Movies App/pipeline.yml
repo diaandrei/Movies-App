@@ -34,19 +34,18 @@ stages:
 
           - script: |
               echo "##[section]Changing to the Movies.Api project directory"
-              cd "Movies App/Movies.Api" 
+              cd "Movies App/Movies.Api"
               echo "##[section]Building the project"
               dotnet publish --configuration $(buildConfiguration) --output $(System.DefaultWorkingDirectory)/build
             displayName: Build and Publish
 
-          - task: VSTest@2
+          - script: |
+              echo "##[section]Changing to the Movies.Application.Test project directory"
+              cd "$(System.DefaultWorkingDirectory)/Movies App/Movies.Application.Test"
+              
+              echo "##[section]Running tests using the .csproj file"
+              dotnet test --configuration $(buildConfiguration) --no-build --verbosity normal
             displayName: Run Tests
-            inputs:
-              testAssemblyVer2: |
-                **\Movies.Application.Test.dll
-              searchFolder: '$(System.DefaultWorkingDirectory)/Movies App/Movies.Application.Test/bin/Release/net8.0'
-              platform: '$(buildPlatform)'
-              configuration: '$(buildConfiguration)'
 
           - task: PublishPipelineArtifact@1
             displayName: "Publish Artifact"
