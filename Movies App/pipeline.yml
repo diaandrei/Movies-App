@@ -39,11 +39,10 @@ stages:
               dotnet publish --configuration $(buildConfiguration) --output $(System.DefaultWorkingDirectory)/build
             displayName: Build and Publish
 
-          # testing section
-          # - script: |
-          #     echo "##[section]Running tests"
-          #     dotnet test --configuration $(buildConfiguration) --no-build --verbosity normal
-          #   displayName: Run Tests
+          - script: |
+              echo "##[section]Running tests"
+              dotnet test --configuration $(buildConfiguration) --no-build --verbosity normal
+            displayName: Run Tests
 
           - task: PublishPipelineArtifact@1
             displayName: "Publish Artifact"
