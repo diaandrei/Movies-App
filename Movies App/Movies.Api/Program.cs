@@ -1,4 +1,5 @@
-using AutoMapper;
+ using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using Movies.Api.Mapping;
 using Movies.Api.Swagger;
 using Movies.Application.Database;
 using Movies.Application.Models;
+using Movies.Application.Services;
 using Movies.Identity;
 using Serilog.Sinks.MSSqlServer;
 using Serilog;
@@ -16,7 +18,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.ObjectModel;
 using System.Text;
 using Movies.Application;
-using Movies.Application.Services;
+using AutoMapper;
 
 public class Program
 {
@@ -25,9 +27,24 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         var config = builder.Configuration;
 
+        var keyVaultUrl = config["KeyVault:VaultUrl"];
+
+        if (!string.IsNullOrEmpty(keyVaultUrl))
+        {
+            builder.Configuration.AddAzureKeyVault(
+                new Uri(keyVaultUrl),
+                new DefaultAzureCredential(),
+                new AzureKeyVaultConfigurationOptions
+                {
+                    ReloadInterval = TimeSpan.FromMinutes(5)
+                }
+            );
+        }
+
         try
         {
-            var connectionString = config.GetConnectionString("Database");
+            var connectionString = config["Movies-DBConnectionString"];
+
             if (string.IsNullOrEmpty(connectionString))
             {
                 throw new ArgumentNullException("Database connection string is missing or empty.");
@@ -37,8 +54,6 @@ public class Program
                 options.UseSqlServer(connectionString));
 
             Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(config)
-                .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .WriteTo.MSSqlServer(
                     connectionString: connectionString,
@@ -81,12 +96,10 @@ public class Program
 
             builder.Services.AddAuthorization();
             builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwagger>();
-
             builder.Services.AddHttpClient<OmdbService>(client =>
             {
                 client.BaseAddress = new Uri("https://api.omdbapi.com/");
             });
-
             builder.Services.AddControllers();
 
             var configMap = new AutoMapper.MapperConfiguration(cfg =>
@@ -99,14 +112,12 @@ public class Program
             var mapper = configMap.CreateMapper();
             builder.Services.AddSingleton(mapper);
             builder.Services.AddEndpointsApiExplorer();
-
             builder.Services.AddCors(option =>
             {
                 option.AddPolicy("AllowOrigin", origin => origin.AllowAnyOrigin()
                                                                 .AllowAnyMethod()
                                                                 .AllowAnyHeader());
             });
-
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Movies API", Version = "v1" });
@@ -115,25 +126,14 @@ public class Program
                 c.DocInclusionPredicate((docName, apiDesc) => !apiDesc.RelativePath.Contains("admin"));
             });
 
-            builder.Services.AddApplication();
+            builder.Services.AddApplication(connectionString);
 
             var app = builder.Build();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseSwagger();
             app.UseSwaggerUI();
-
-            app.Use(async (context, next) =>
-            {
-                if (context.Request.Path == "/")
-                {
-                    context.Response.Redirect("/swagger/index.html");
-                    return;
-                }
-                await next();
-            });
 
             app.UseRouting();
             app.UseCors("AllowOrigin");
