@@ -16,13 +16,15 @@ namespace Movies.Api.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _config;
+        private readonly TokenGenerator _tokenGenerator;
         public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-            RoleManager<IdentityRole> roleManager, IConfiguration config)
+            RoleManager<IdentityRole> roleManager, IConfiguration config, TokenGenerator tokenGenerator)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _config = config;
+            _tokenGenerator = tokenGenerator;
         }
 
         [HttpPost(ApiEndpoints.Movies.Register)]
@@ -128,7 +130,7 @@ namespace Movies.Api.Controllers
                                 IsAdmin = user.IsAdmin,
                             };
 
-                            var token = TokenGenerator.GenerateToken(jwtReq);
+                            var token = _tokenGenerator.GenerateToken(jwtReq);
 
                             LoginDto login = new LoginDto
                             {

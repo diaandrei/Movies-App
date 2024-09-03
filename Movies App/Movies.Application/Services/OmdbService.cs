@@ -7,13 +7,15 @@ namespace Movies.Application.Services
 {
     public class OmdbService : IOmdbService
     {
-        public readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
         private readonly ILogger<OmdbService> _logger;
+        private readonly string _apiKey;
 
-        public OmdbService(ILogger<OmdbService> logger, HttpClient client)
+        public OmdbService(ILogger<OmdbService> logger, HttpClient client, string apiKey)
         {
             _logger = logger;
             _httpClient = client;
+            _apiKey = apiKey;
         }
 
         public async Task<ResponseModel<OmdbResponse>> GetMovieAsync(string title, string year, CancellationToken token)
@@ -24,7 +26,7 @@ namespace Movies.Application.Services
                 Success = false
             };
 
-            var url = $"http://www.omdbapi.com/?t={title}&y={year}&apikey=b4de2ce9";
+            var url = $"http://www.omdbapi.com/?t={title}&y={year}&apikey={_apiKey}";
             var response = await _httpClient.GetAsync(url, token);
 
             if (!response.IsSuccessStatusCode)

@@ -1,5 +1,6 @@
- using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using AutoMapper;
 using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -17,8 +18,6 @@ using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.ObjectModel;
 using System.Text;
-using Movies.Application;
-using AutoMapper;
 
 public class Program
 {
@@ -26,133 +25,141 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         var config = builder.Configuration;
-
         var keyVaultUrl = config["KeyVault:VaultUrl"];
+        string tokenSecret = null!, issuer = null!, audience = null!, connectionString = null!, omdbApiKey = null!;
+
+        SecretClient secretClient = null!;
 
         if (!string.IsNullOrEmpty(keyVaultUrl))
         {
-            builder.Configuration.AddAzureKeyVault(
-                new Uri(keyVaultUrl),
-                new DefaultAzureCredential(),
-                new AzureKeyVaultConfigurationOptions
-                {
-                    ReloadInterval = TimeSpan.FromMinutes(5)
-                }
-            );
+            secretClient = new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential());
+
+            tokenSecret = secretClient.GetSecret("Movies-JWTKey").Value.Value;
+            issuer = secretClient.GetSecret("Movies-JwtIssuer").Value.Value;
+            audience = secretClient.GetSecret("Movies-JwtAudience").Value.Value;
+            omdbApiKey = secretClient.GetSecret("Omdb-ApiKey").Value.Value;
+            connectionString = secretClient.GetSecret("Movies-DBConnectionString")?.Value?.Value!;
         }
 
-        try
+        if (string.IsNullOrEmpty(connectionString))
         {
-            var connectionString = config["Movies-DBConnectionString"];
+            connectionString = config["ConnectionStrings:Database"];
+        }
 
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                throw new ArgumentNullException("Database connection string is missing or empty.");
-            }
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new ArgumentNullException("Database connection string is missing or empty.");
+        }
 
-            builder.Services.AddDbContext<MoviesDbContext>(options =>
-                options.UseSqlServer(connectionString));
+        builder.Services.AddSingleton(secretClient);
 
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .WriteTo.MSSqlServer(
-                    connectionString: connectionString,
-                    sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true },
-                    columnOptions: new ColumnOptions
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.MSSqlServer(
+                connectionString: connectionString,
+                sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true },
+                columnOptions: new ColumnOptions
+                {
+                    AdditionalColumns = new Collection<SqlColumn>
                     {
-                        AdditionalColumns = new Collection<SqlColumn>
-                        {
-                            new SqlColumn { ColumnName = "UserName", DataType = System.Data.SqlDbType.NVarChar, DataLength = 50, AllowNull = true }
-                        }
+                        new SqlColumn { ColumnName = "UserName", DataType = System.Data.SqlDbType.NVarChar, DataLength = 50, AllowNull = true }
                     }
-                )
-                .CreateLogger();
+                }
+            )
+            .CreateLogger();
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<MoviesDbContext>()
-                .AddDefaultTokenProviders();
+        builder.Host.UseSerilog();
 
-            builder.Host.UseSerilog();
+        builder.Services.AddSingleton<JwtConfigurationService>();
 
-            builder.Services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x =>
-            {
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(config["Jwt:Key"]!)),
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-                    ValidIssuer = config["Jwt:Issuer"],
-                    ValidAudience = config["Jwt:Audience"],
-                    ValidateIssuer = true,
-                    ValidateAudience = true
-                };
-            });
+        builder.Services.AddTransient<TokenGenerator>();
 
-            builder.Services.AddAuthorization();
-            builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwagger>();
-            builder.Services.AddHttpClient<OmdbService>(client =>
-            {
-                client.BaseAddress = new Uri("https://api.omdbapi.com/");
-            });
-            builder.Services.AddControllers();
+        builder.Services.AddDbContext<MoviesDbContext>(options =>
+            options.UseSqlServer(connectionString));
 
-            var configMap = new AutoMapper.MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new MappingProfile());
-                cfg.SourceMemberNamingConvention = LowerUnderscoreNamingConvention.Instance;
-                cfg.DestinationMemberNamingConvention = PascalCaseNamingConvention.Instance;
-                cfg.AllowNullCollections = true;
-            });
-            var mapper = configMap.CreateMapper();
-            builder.Services.AddSingleton(mapper);
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddCors(option =>
-            {
-                option.AddPolicy("AllowOrigin", origin => origin.AllowAnyOrigin()
-                                                                .AllowAnyMethod()
-                                                                .AllowAnyHeader());
-            });
-            builder.Services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Movies API", Version = "v1" });
-                c.CustomSchemaIds(type => type.FullName);
-                c.SchemaFilter<ExcludeSystemTypesSchemaFilter>();
-                c.DocInclusionPredicate((docName, apiDesc) => !apiDesc.RelativePath.Contains("admin"));
-            });
+        builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            .AddEntityFrameworkStores<MoviesDbContext>()
+            .AddDefaultTokenProviders();
 
-            builder.Services.AddApplication(connectionString);
-
-            var app = builder.Build();
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseSwagger();
-            app.UseSwaggerUI();
-
-            app.UseRouting();
-            app.UseCors("AllowOrigin");
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.UseMiddleware<ValidationMappingMiddleware>();
-            app.UseMiddleware<TokenMiddleware>();
-            app.MapControllers();
-
-            app.Run();
-        }
-        catch (Exception ex)
+        builder.Services.AddAuthentication(options =>
         {
-            Log.Fatal(ex, "Application start-up failed");
-            throw;
-        }
-        finally
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
         {
-            Log.CloseAndFlush();
-        }
+            var jwtConfig = builder.Services.BuildServiceProvider().GetRequiredService<JwtConfigurationService>();
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.TokenSecret)),
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = true,
+                ValidIssuer = jwtConfig.Issuer,
+                ValidAudience = jwtConfig.Audience,
+                ValidateIssuer = true,
+                ValidateAudience = true
+            };
+        });
+
+        builder.Services.AddAuthorization();
+
+        builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwagger>();
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Movies API", Version = "v1" });
+            c.CustomSchemaIds(type => type.FullName);
+            c.SchemaFilter<ExcludeSystemTypesSchemaFilter>();
+            c.DocInclusionPredicate((docName, apiDesc) => !apiDesc.RelativePath!.Contains("admin"));
+        });
+
+        var configMap = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new MappingProfile());
+            cfg.SourceMemberNamingConvention = LowerUnderscoreNamingConvention.Instance;
+            cfg.DestinationMemberNamingConvention = PascalCaseNamingConvention.Instance;
+            cfg.AllowNullCollections = true;
+        });
+        var mapper = configMap.CreateMapper();
+        builder.Services.AddSingleton(mapper);
+
+        builder.Services.AddCors(option =>
+        {
+            option.AddPolicy("AllowOrigin", origin => origin.AllowAnyOrigin()
+                                                            .AllowAnyMethod()
+                                                            .AllowAnyHeader());
+        });
+
+        builder.Services.AddHttpClient<OmdbService>(client =>
+        {
+            client.BaseAddress = new Uri("https://api.omdbapi.com/");
+        });
+
+        builder.Services.AddScoped<IOmdbService>(provider =>
+        {
+            var logger = provider.GetRequiredService<ILogger<OmdbService>>();
+            var client = provider.GetRequiredService<HttpClient>();
+            return new OmdbService(logger, client, omdbApiKey);
+        });
+
+        builder.Services.AddControllers();
+
+        builder.Services.AddApplication(connectionString, omdbApiKey);
+
+        var app = builder.Build();
+
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+        app.UseRouting();
+        app.UseCors("AllowOrigin");
+        app.UseAuthentication();
+        app.UseAuthorization();
+        app.UseSwagger();
+        app.UseSwaggerUI();
+        app.UseMiddleware<ValidationMappingMiddleware>();
+        app.UseMiddleware<TokenMiddleware>();
+        app.MapControllers();
+
+        app.Run();
     }
 }
