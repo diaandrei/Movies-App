@@ -43,9 +43,12 @@ stages:
               echo "##[section]Changing to the Movies.Application.Test project directory"
               cd "Movies App/Movies.Application.Test"
               
+              echo "##[section]Restoring NuGet packages"
+              dotnet restore
+              
               echo "##[section]Running tests using the Movies.Application.Test.csproj"
               dotnet test --no-restore --verbosity normal --configuration $(buildConfiguration)
-            displayName: Run Tests
+            displayName: Restore and Run Tests
 
           - task: PublishPipelineArtifact@1
             displayName: "Publish Artifact"
