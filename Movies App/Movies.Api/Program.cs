@@ -51,8 +51,6 @@ public class Program
             throw new ArgumentNullException("Database connection string is missing or empty.");
         }
 
-        builder.Services.AddSingleton(secretClient);
-
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
             .WriteTo.MSSqlServer(
@@ -70,8 +68,12 @@ public class Program
 
         builder.Host.UseSerilog();
 
-        builder.Services.AddSingleton<JwtConfigurationService>();
+        if (secretClient != null)
+        {
+            builder.Services.AddSingleton(secretClient);
+        }
 
+        builder.Services.AddSingleton<JwtConfigurationService>();
         builder.Services.AddTransient<TokenGenerator>();
 
         builder.Services.AddDbContext<MoviesDbContext>(options =>

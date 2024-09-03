@@ -22,9 +22,9 @@ namespace Movies.Application.Test
         {
             _loggerMock = new Mock<ILogger<OmdbService>>();
             _httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-
             _httpClient = new HttpClient(_httpMessageHandlerMock.Object);
-            _omdbService = new OmdbService(_loggerMock.Object, _httpClient);
+            string apiKey = "test-api-key";
+            _omdbService = new OmdbService(_loggerMock.Object, _httpClient, apiKey);
         }
 
         [TearDown]
