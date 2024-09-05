@@ -16,6 +16,8 @@ public class MovieRepository : IMovieRepository
 
     public async Task<bool> CreateAsync(Movie movie, List<Genre> genres, List<Cast> casts, IEnumerable<OmdbRatingResponse> ombdRatings, CancellationToken token = default)
     {
+        _dbContext.Entry(movie).State = EntityState.Detached;
+
         if (_dbContext.Movies.Any(m => m.Title == movie.Title && m.YearOfRelease == movie.YearOfRelease))
         {
             throw new ArgumentException("The title you are trying to add already exists.");
@@ -47,7 +49,13 @@ public class MovieRepository : IMovieRepository
             }
         }
 
+        var yearOfRelease = movie.YearOfRelease.EndsWith("-")
+            ? movie.YearOfRelease = movie.YearOfRelease.Replace("-", "")
+            : movie.YearOfRelease;
+        movie.YearOfRelease = yearOfRelease;
+
         await _dbContext.Movies.AddAsync(movie, token);
+
         await _dbContext.SaveChangesAsync(token);
 
         foreach (var genre in genres)
@@ -69,14 +77,29 @@ public class MovieRepository : IMovieRepository
             };
             _dbContext.MovieCast.Add(movieCast);
         }
+
         foreach (var omdbRating in ombdRatings)
         {
+            var ratingValue = omdbRating.Value;
+            if (!string.IsNullOrEmpty(ratingValue) && ratingValue.Contains("/"))
+            {
+                var parts = ratingValue.Split('/');
+
+                if (double.TryParse(parts[0], out var numerator) && double.TryParse(parts[1], out var denominator) && denominator != 0)
+                {
+
+                    double percentage = (numerator / denominator) * 100;
+                    string roundedPercentage = Math.Round(percentage, 2).ToString("0");
+
+                    ratingValue = roundedPercentage + "%";
+                }
+            }
             var rating = new OmdbRating
             {
                 Id = Guid.NewGuid(),
                 MovieId = movie.Id,
                 Source = omdbRating.Source,
-                Value = omdbRating.Value
+                Value = ratingValue
             };
             _dbContext.OmdbRatings.Add(rating);
         }
@@ -85,13 +108,13 @@ public class MovieRepository : IMovieRepository
         return true;
     }
 
-    public async Task<Movie> GetByIdAsync(Guid id, bool isAdmin = false, string userId = null, CancellationToken token = default)
+    public async Task<Movie> GetByIdAsync(Guid id, bool isAdmin = false, string userId = null!, CancellationToken token = default)
     {
         var movie = await _dbContext.Movies
             .Where(x => x.Id == id)
             .FirstOrDefaultAsync(token);
 
-        if (movie == null) return null;
+        if (movie == null) return null!;
 
         var casts = await _dbContext.MovieCast
             .Where(mc => mc.MovieId == id)
@@ -125,6 +148,7 @@ public class MovieRepository : IMovieRepository
             .Where(or => or.MovieId == id)
             .Select(or => new OmdbRating
             {
+                Id = or.Id,
                 Source = or.Source,
                 Value = or.Value
             })
@@ -153,6 +177,7 @@ public class MovieRepository : IMovieRepository
             .ToListAsync(token);
 
         ApplicationUser? user = null;
+
         if (!string.IsNullOrEmpty(userId))
         {
             user = await _dbContext.Users
@@ -187,7 +212,7 @@ public class MovieRepository : IMovieRepository
         };
     }
 
-    public async Task<IEnumerable<Movie>> GetAllAsync(GetAllMoviesOptions options, bool isAdmin = false, string userId = null, CancellationToken token = default)
+    public async Task<IEnumerable<Movie>> GetAllAsync(GetAllMoviesOptions options, bool isAdmin = false, string userId = null!, CancellationToken token = default)
     {
         var query = _dbContext.Movies.AsQueryable();
 
@@ -239,6 +264,7 @@ public class MovieRepository : IMovieRepository
             .ToListAsync(token);
 
         ApplicationUser? user = null;
+
         if (!string.IsNullOrEmpty(userId))
         {
             user = await _dbContext.Users
@@ -262,40 +288,36 @@ public class MovieRepository : IMovieRepository
             UserRating = movie.UserRating,
             CreatedAt = movie.CreatedAt,
             UpdatedAt = movie.UpdatedAt,
-
             Cast = casts.Where(mc => mc.MovieId == movie.Id).Select(mc => new Cast
             {
                 Id = mc.CastId,
                 Name = mc.Cast.Name,
                 Role = mc.Cast.Role
             }).ToList(),
-
             Genres = genres.Where(mg => mg.MovieId == movie.Id).Select(mg => new Genre
             {
                 Id = mg.GenreId,
                 Name = mg.Genre.Name
             }).ToList(),
-
             ExternalRatings = externalRatings.Where(er => er.MovieId == movie.Id).Select(er => new ExternalRating
             {
                 Source = er.Source,
                 Rating = er.Rating
             }).ToList(),
-
             OmdbRatings = omdbRatings.Where(or => or.MovieId == movie.Id).Select(or => new OmdbRating
             {
+                Id = or.Id,
                 Source = or.Source,
                 Value = or.Value
             }).ToList(),
-
             MovieRatings = movieRatings.Where(mr => mr.MovieId == movie.Id).Select(mr => new MovieRating
             {
+                UserId = mr.UserId,
                 Rating = mr.Rating,
                 IsUserRated = mr.IsUserRated,
                 Id = mr.Id,
                 MovieId = mr.MovieId
             }).ToList(),
-
             UserWatchlists = userWatchlist.Where(uw => uw.MovieId == movie.Id).Select(uw => new UserWatchlist
             {
                 Id = uw.Id,
@@ -309,7 +331,7 @@ public class MovieRepository : IMovieRepository
 
         return movieDTOs;
     }
-    public async Task<IEnumerable<Movie>> GetTopMovieAsync(bool isAdmin = false, string userId = null, CancellationToken token = default)
+    public async Task<IEnumerable<Movie>> GetTopMovieAsync(bool isAdmin = false, string userId = null!, CancellationToken token = default)
     {
         var topMovieIds = await _dbContext.TopMovies.Take(10)
        .Select(tm => tm.MovieId)
@@ -348,6 +370,7 @@ public class MovieRepository : IMovieRepository
             .ToListAsync(token);
 
         ApplicationUser? user = null;
+
         if (!string.IsNullOrEmpty(userId))
         {
             user = await _dbContext.Users
@@ -378,30 +401,26 @@ public class MovieRepository : IMovieRepository
                 Name = mc.Cast.Name,
                 Role = mc.Cast.Role
             }).ToList(),
-
             Genres = genres.Where(mg => mg.MovieId == movie.Id).Select(mg => new Genre
             {
                 Id = mg.GenreId,
                 Name = mg.Genre.Name
             }).ToList(),
-
             ExternalRatings = externalRatings.Where(er => er.MovieId == movie.Id).Select(er => new ExternalRating
             {
                 Source = er.Source,
                 Rating = er.Rating
             }).ToList(),
-
             OmdbRatings = omdbRatings.Where(or => or.MovieId == movie.Id).Select(or => new OmdbRating
             {
                 Source = or.Source,
                 Value = or.Value
             }).ToList(),
-
             MovieRatings = movieRatings.Where(mr => mr.MovieId == movie.Id).Select(mr => new MovieRating
             {
+                Id = mr.Id,
                 Rating = mr.Rating
             }).ToList(),
-
             UserWatchlists = userWatchlist.Where(uw => uw.MovieId == movie.Id).Select(uw => new UserWatchlist
             {
                 Id = uw.Id,
@@ -417,7 +436,7 @@ public class MovieRepository : IMovieRepository
         return movieDTOs;
     }
 
-    public async Task<IEnumerable<Movie>> GetMostRecentMovieAsync(bool isAdmin = false, string userId = null, CancellationToken token = default)
+    public async Task<IEnumerable<Movie>> GetMostRecentMovieAsync(bool isAdmin = false, string userId = null!, CancellationToken token = default)
     {
         var query = _dbContext.Movies.OrderByDescending(m => m.CreatedAt).Take(10).AsQueryable();
 
@@ -446,11 +465,13 @@ public class MovieRepository : IMovieRepository
         var movieRatings = await _dbContext.MovieRatings
                 .Where(mr => movieIds.Contains(mr.MovieId) && mr.UserId == userId)
                 .ToListAsync(token);
+
         var userWatchlist = await _dbContext.UserWatchlists
             .Where(uw => movieIds.Contains(uw.MovieId) && uw.UserId == userId)
             .ToListAsync(token);
 
         ApplicationUser? user = null;
+
         if (!string.IsNullOrEmpty(userId))
         {
             user = await _dbContext.Users
@@ -481,30 +502,26 @@ public class MovieRepository : IMovieRepository
                 Name = mc.Cast.Name,
                 Role = mc.Cast.Role
             }).ToList(),
-
             Genres = genres.Where(mg => mg.MovieId == movie.Id).Select(mg => new Genre
             {
                 Id = mg.GenreId,
                 Name = mg.Genre.Name
             }).ToList(),
-
             ExternalRatings = externalRatings.Where(er => er.MovieId == movie.Id).Select(er => new ExternalRating
             {
                 Source = er.Source,
                 Rating = er.Rating
             }).ToList(),
-
             OmdbRatings = omdbRatings.Where(or => or.MovieId == movie.Id).Select(or => new OmdbRating
             {
                 Source = or.Source,
                 Value = or.Value
             }).ToList(),
-
             MovieRatings = movieRatings.Where(mr => mr.MovieId == movie.Id).Select(mr => new MovieRating
             {
+                Id = mr.Id,
                 Rating = mr.Rating
             }).ToList(),
-
             UserWatchlists = userWatchlist.Where(uw => uw.MovieId == movie.Id).Select(uw => new UserWatchlist
             {
                 Id = uw.Id,
@@ -524,16 +541,18 @@ public class MovieRepository : IMovieRepository
     {
         try
         {
-            var existingMovie = await _dbContext.Movies.FindAsync(movie?.Id);
+            var existingMovie = await GetByIdAsync(movie.Id, token: token);
 
             if (existingMovie == null)
             {
                 return false;
             }
 
-            existingMovie.Plot = movie.Plot;
-            existingMovie.UserRating = movie?.UserRating;
-            existingMovie.UpdatedAt = DateTime.UtcNow;
+            await UpdateMovieBasicProperties(existingMovie, movie, token);
+            await UpdateOrAddCastAsync(existingMovie, movie.Cast, token);
+            await UpdateOrAddGenresAsync(existingMovie, movie.Genres, token);
+            await UpdateOrAddOmdbRatingsAsync(existingMovie, movie.OmdbRatings, token);
+            await UpdateOrAddMovieRatingsAsync(existingMovie, movie.MovieRatings, token);
 
             await _dbContext.SaveChangesAsync(token);
 
@@ -543,6 +562,180 @@ public class MovieRepository : IMovieRepository
         {
             return false;
         }
+    }
+
+    private async Task UpdateMovieBasicProperties(Movie existingMovie, Movie movie, CancellationToken token)
+    {
+        var db = await _dbContext.Movies.FindAsync(movie?.Id);
+        db.Title = !string.IsNullOrEmpty(movie!.Title) ? movie.Title : existingMovie.Title;
+        db.Released = !string.IsNullOrEmpty(movie.Released) ? movie.Released : existingMovie.Released;
+        db.Runtime = !string.IsNullOrEmpty(movie.Runtime) ? movie.Runtime : existingMovie.Runtime;
+        db.YearOfRelease = !string.IsNullOrEmpty(movie.YearOfRelease) ? movie.YearOfRelease : existingMovie.YearOfRelease;
+        db.Rated = !string.IsNullOrEmpty(movie.Rated) ? movie.Rated : existingMovie.Rated;
+        db.Plot = !string.IsNullOrEmpty(movie.Plot) ? movie.Plot : existingMovie.Plot;
+        db.Awards = !string.IsNullOrEmpty(movie.Awards) ? movie.Awards : existingMovie.Awards;
+        db.Poster = !string.IsNullOrEmpty(movie.Poster) ? movie.Poster : existingMovie.Poster;
+        db.TotalSeasons = !string.IsNullOrEmpty(movie.TotalSeasons) ? movie.TotalSeasons : existingMovie.TotalSeasons;
+        db.IsActive = movie.IsActive;
+        db.Rating = movie.Rating.HasValue ? movie.Rating : existingMovie.Rating;
+        db.UserRating = movie.UserRating.HasValue ? movie.UserRating : existingMovie.UserRating;
+        db.UpdatedAt = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync(token);
+    }
+
+    private async Task UpdateOrAddCastAsync(Movie existingMovie, List<Cast> newCasts, CancellationToken token)
+    {
+        var existingCasts = await _dbContext.Casts.Where(c => newCasts.Select(ec => ec.Name).Contains(c.Name)).ToListAsync(token);
+        var castIds = new List<Guid>();
+        var newCastId = Guid.NewGuid();
+        foreach (var newCast in newCasts)
+        {
+            var existingCast = existingCasts.FirstOrDefault(c => c.Name == newCast.Name);
+
+            if (existingCast != null)
+            {
+                existingCast.Name = newCast.Name;
+                existingCast.Role = newCast.Role;
+                castIds.Add(existingCast.Id);
+            }
+            else
+            {
+                var castToAdd = new Cast
+                {
+                    Id = newCastId,
+                    Name = newCast.Name,
+                    Role = newCast.Role,
+                };
+                _dbContext.Casts.Add(castToAdd);
+                castIds.Add(newCastId);
+
+            }
+        }
+        await _dbContext.SaveChangesAsync(token);
+
+        var existingMovieCasts = await _dbContext.MovieCast
+            .Where(mc => mc.MovieId == existingMovie.Id)
+            .ToListAsync(token);
+
+        _dbContext.MovieCast.RemoveRange(existingMovieCasts);
+
+        foreach (var castId in castIds)
+        {
+            var movieCast = new MovieCast
+            {
+                MovieId = existingMovie.Id,
+                CastId = castId
+            };
+            _dbContext.MovieCast.Add(movieCast);
+        }
+        await _dbContext.SaveChangesAsync(token);
+    }
+
+    private async Task UpdateOrAddGenresAsync(Movie existingMovie, List<Genre> newGenres, CancellationToken token)
+    {
+        var existingGenres = await _dbContext.Genres.Where(g => newGenres.Select(ng => ng.Name).Contains(g.Name)).ToListAsync(token);
+        var genreIds = new List<Guid>();
+        var newId = Guid.NewGuid();
+
+        foreach (var newGenre in newGenres)
+        {
+            var existingGenre = existingGenres.FirstOrDefault(g => g.Name == newGenre.Name);
+
+            if (existingGenre != null)
+            {
+                existingGenre.Name = newGenre.Name;
+                genreIds.Add(existingGenre.Id);
+            }
+            else
+            {
+                var genreToAdd = new Genre
+                {
+                    Id = newId,
+                    Name = newGenre.Name,
+                    UpdatedAt = newGenre.UpdatedAt
+                };
+                _dbContext.Genres.Add(genreToAdd);
+                genreIds.Add(newId);
+            }
+        }
+        await _dbContext.SaveChangesAsync(token);
+
+        var existingMovieGenre = await _dbContext.MovieGenres
+            .Where(mc => mc.MovieId == existingMovie.Id)
+            .ToListAsync(token);
+
+        _dbContext.MovieGenres.RemoveRange(existingMovieGenre);
+
+        foreach (var genreId in genreIds)
+        {
+            var movieGenre = new MovieGenres
+            {
+                MovieId = existingMovie.Id,
+                GenreId = genreId
+            };
+            _dbContext.MovieGenres.Add(movieGenre);
+        }
+        await _dbContext.SaveChangesAsync(token);
+    }
+
+    private async Task UpdateOrAddOmdbRatingsAsync(Movie existingMovie, List<OmdbRating> newOmdbRatings, CancellationToken token)
+    {
+        var existingOmdbRatings = await _dbContext.OmdbRatings.Where(or => or.MovieId == existingMovie.Id).ToListAsync(token);
+
+        var newId = Guid.NewGuid();
+
+        foreach (var newOmdbRating in newOmdbRatings)
+        {
+            var existingOmdbRating = existingOmdbRatings.FirstOrDefault(or => or.Source == newOmdbRating.Source);
+
+            if (existingOmdbRating != null)
+            {
+                existingOmdbRating.Value = newOmdbRating.Value;
+            }
+            else
+            {
+                var ombRatingToAdd = new OmdbRating
+                {
+                    Id = newId,
+                    Source = newOmdbRating.Source,
+                    MovieId = existingMovie.Id,
+                    Value = newOmdbRating.Value
+                };
+
+                _dbContext.OmdbRatings.Add(ombRatingToAdd);
+            }
+        }
+        await _dbContext.SaveChangesAsync(token);
+    }
+
+    private async Task UpdateOrAddMovieRatingsAsync(Movie existingMovie, List<MovieRating> newMovieRatings, CancellationToken token)
+    {
+        var existingMovieRatings = await _dbContext.MovieRatings.Where(mr => mr.MovieId == existingMovie.Id).ToListAsync(token);
+
+        var newId = Guid.NewGuid();
+
+        foreach (var newMovieRating in newMovieRatings)
+        {
+            var existingMovieRating = existingMovieRatings.FirstOrDefault(mr => mr.UserId == newMovieRating.UserId);
+            if (existingMovieRating != null)
+            {
+                existingMovieRating.Rating = newMovieRating.Rating;
+            }
+            else
+            {
+                var movieRatingToAdd = new MovieRating
+                {
+
+                    UserId = newMovieRating.UserId,
+                    Rating = newMovieRating.Rating,
+                    IsUserRated = newMovieRating.IsUserRated,
+                    UpdatedAt = newMovieRating.UpdatedAt
+                };
+                _dbContext.MovieRatings.Add(movieRatingToAdd);
+            }
+        }
+        await _dbContext.SaveChangesAsync(token);
     }
 
     public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
@@ -581,12 +774,21 @@ public class MovieRepository : IMovieRepository
         }
         return await query.CountAsync(token);
     }
+
     public async Task<IEnumerable<Movie>> GetSearchedMoviesAsync(string? textToSearchMovie, CancellationToken token = default)
     {
+        if (string.IsNullOrWhiteSpace(textToSearchMovie))
+        {
+            return Enumerable.Empty<Movie>();
+        }
+
         var query = _dbContext.Movies.AsQueryable();
 
         query = query.Where(x => EF.Functions.Like(x.Title, $"%{textToSearchMovie}%") ||
-                                EF.Functions.Like(x.YearOfRelease, $"%{textToSearchMovie}%"));
+                                 EF.Functions.Like(x.YearOfRelease, $"%{textToSearchMovie}%"));
+        query = query.OrderBy(x => EF.Functions.Like(x.Title, $"{textToSearchMovie}%") ? 0 : 1);
+
+        query = query.Take(5);
 
         return await query.ToListAsync(token);
     }

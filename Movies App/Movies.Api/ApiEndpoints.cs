@@ -11,6 +11,7 @@
             public const string Create = Base;
             public const string Get = $"{Base}/{{id:guid}}";
             public const string GetAll = Base;
+            public const string GetAllWatchlistRatedMovies = $"{Base}/watchlist";
             public const string GetAdminMovies = $"{Base}/admin";
             public const string GetTopFavorites = $"{Base}/favorites";
             public const string Update = $"{Base}/{{id:guid}}";
@@ -18,6 +19,7 @@
 
             public const string Rate = $"{Base}/{{id:guid}}/ratings";
             public const string DeleteRating = $"{Base}/{{id:guid}}/ratings";
+            public const string GetAllRatedMovies = $"{Base}/ratings/me";
 
             public const string Search = $"{Base}/search";
             public const string AddToWatchlist = $"{Base}/watchlist/{{id:guid}}";

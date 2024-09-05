@@ -7,6 +7,6 @@
         public decimal Rating { get; set; }
         public string UserId { get; set; }
         public bool IsUserRated { get; set; }
-        public virtual MovieResponse Movie { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }

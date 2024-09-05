@@ -19,23 +19,22 @@ namespace Movies.Api.Controllers
 
         [Authorize]
         [HttpGet(ApiEndpoints.Movies.Rate)]
-        public async Task<ResponseModel<string>> RateMovie(
-            Guid ratingId, Guid movieId, decimal rating, CancellationToken token)
+        public async Task<ResponseModel<string>> RateMovie(Guid ratingId, Guid movieId, decimal rating, string? userId, CancellationToken token)
         {
             var response = new ResponseModel<string>
             {
                 Title = "Something went wrong.",
                 Success = false
             };
-            var userId = HttpContext.GetUserId().ToString();
+
+            var tokenUserId = HttpContext.GetUserId().ToString();
             var isAdmin = HttpContext.CheckAdmin();
-            var mapReq = ContractMapping.MapToRatingRequest(ratingId, movieId, rating, userId);
-            var result = await _ratingService.RateMovieAsync(mapReq, isAdmin, token);
+            var mapReq = ContractMapping.MapToRatingRequest(ratingId, movieId, rating, tokenUserId);
+            var result = await _ratingService.RateMovieAsync(mapReq, isAdmin, userId!, token: token);
 
             response.Success = result.Success;
             response.Title = result.Title;
             response.Content = result.Content;
-
 
             return response;
         }
@@ -49,11 +48,14 @@ namespace Movies.Api.Controllers
                 Title = "Something went wrong.",
                 Success = false
             };
+
             var userId = HttpContext.GetUserId().ToString();
             var result = await _ratingService.DeleteRatingAsync(id, userId, token);
+
             response.Success = result.Success;
             response.Title = result.Title;
             response.Content = result.Content;
+
             return response;
         }
 
@@ -66,13 +68,20 @@ namespace Movies.Api.Controllers
                 Success = false,
                 Title = "Something went wrong."
             };
-            var userId = HttpContext.GetUserId().ToString();
-            var ratings = await _ratingService.GetRatingsForUserAsync(userId, token);
-            var ratingResponse = ratings.Content.MapToResponse();
 
-            response.Title = ratings.Title;
-            response.Success = ratings.Success;
-            response.Content = ratings.Content;
+            var userId = HttpContext.GetUserId().ToString();
+            var ratingsResponse = await _ratingService.GetRatingsForUserAsync(userId, token);
+
+            if (ratingsResponse.Content != null && ratingsResponse.Content.Any())
+            {
+                response.Success = true;
+                response.Title = "User Ratings";
+                response.Content = ratingsResponse.Content;
+            }
+            else
+            {
+                response.Title = "No ratings found.";
+            }
 
             return response;
         }

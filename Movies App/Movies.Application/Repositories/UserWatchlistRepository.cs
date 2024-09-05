@@ -13,10 +13,6 @@ namespace Movies.Application.Repositories
         {
             _dbContext = dbcontext;
         }
-        public Task<bool> CreateAsync(UserWatchlist movie, CancellationToken token = default)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
         {
@@ -35,7 +31,7 @@ namespace Movies.Application.Repositories
             return movie != null;
         }
 
-        public async Task<IEnumerable<MovieDto>> GetAllAsync(bool isAdmin, string userId = null, CancellationToken token = default)
+        public async Task<IEnumerable<MovieDto>> GetAllAsync(bool isAdmin, string userId = null!, CancellationToken token = default)
         {
             var userWatchlists = await _dbContext.UserWatchlists
                 .Where(uw => uw.UserId == userId)
@@ -79,6 +75,7 @@ namespace Movies.Application.Repositories
             .ToListAsync(token);
 
             ApplicationUser? user = null;
+
             if (!string.IsNullOrEmpty(userId))
             {
                 user = await _dbContext.Users
@@ -133,7 +130,7 @@ namespace Movies.Application.Repositories
                     Id = mr.Id,
                     Rating = mr.Rating,
                 }).ToList(),
-                ApplicationUser = user
+                ApplicationUser = user!
             }).ToList();
 
             return movieDTOs;
@@ -142,11 +139,6 @@ namespace Movies.Application.Repositories
         public async Task<UserWatchlist?> GetByIdAsync(Guid id, bool isAdmin = false, Guid? userId = null, CancellationToken token = default)
         {
             return await _dbContext.UserWatchlists.FirstOrDefaultAsync(x => x.Id == id, token);
-        }
-
-        public Task<int> GetCountAsync(string? title, string? yearOfRelease, CancellationToken token = default)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<bool> UpdateAsync(UserWatchlist movie, CancellationToken token = default)
@@ -167,20 +159,15 @@ namespace Movies.Application.Repositories
                 return movieEntry.Entity;
             }
 
-            return null;
+            return null!;
         }
-
 
         public async Task<bool> CountUserWatchlistAsync(string userId, CancellationToken token = default)
         {
             var count = await _dbContext.UserWatchlists
             .CountAsync(uwl => uwl.UserId == userId, token);
-            return count == 1;
-        }
 
-        public Task<IEnumerable<MovieDto>> GetAllAsync(string userId, bool isAdmin = false, CancellationToken token = default)
-        {
-            throw new NotImplementedException();
+            return count == 1;
         }
     }
 }

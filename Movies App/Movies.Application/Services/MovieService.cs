@@ -36,6 +36,7 @@ namespace Movies.Application.Services
                 Title = "Oops! Something went wrong. Please retry in a moment.",
                 Success = false
             };
+
             var omdbResponse = await _omdbService.GetMovieAsync(movie.Title, movie.YearOfRelease.ToString(), token);
 
             if (omdbResponse.Success == false || string.IsNullOrEmpty(omdbResponse.Content.Title))
@@ -45,12 +46,12 @@ namespace Movies.Application.Services
                 return response;
             }
 
-            var movieExist = await _movieRepository.GetMovieByTitle(omdbResponse.Content.Title);
+            var movieExist = await _movieRepository.GetMovieByTitle(omdbResponse.Content.Title, token);
 
             if (movieExist)
             {
                 response.Success = false;
-                response.Title = "Movie already exist.";
+                response.Title = "Title already exist.";
                 return response;
             }
 
@@ -58,6 +59,7 @@ namespace Movies.Application.Services
             var movieWithCast = movie.PopulateCastFromOmdb(omdbResponse.Content.Actors);
 
             movie = movie.PopulateValuesFromOmdb(omdbResponse.Content);
+
             await _movieValidator.ValidateAndThrowAsync(movie, cancellationToken: token);
 
             try
@@ -66,6 +68,7 @@ namespace Movies.Application.Services
                     token);
                 response.Title = $"{movie.Title} title created Successfully";
                 response.Success = true;
+                response.Content = movie.Id.ToString();
                 _logger.LogInformation("Successfully created title: {Title} (ID: {Id})", movie.Title, movie.Id);
 
             }
@@ -73,7 +76,7 @@ namespace Movies.Application.Services
             {
                 response.Success = false;
                 response.Title = ex.Message;
-                _logger.LogError(ex, "An error occurred while creating movie: {Title}", movie.Title);
+                _logger.LogError(ex, "An error occurred while creating title: {Title}", movie.Title);
                 throw;
             }
 
@@ -102,7 +105,7 @@ namespace Movies.Application.Services
 
                 if (existingMovies.Count() == topMovies.Count)
                 {
-                    var movie = await _movieRepository.CreateTopMovieAsync(topMovies);
+                    var movie = await _movieRepository.CreateTopMovieAsync(topMovies, token);
 
                     if (movie)
                     {
@@ -123,15 +126,15 @@ namespace Movies.Application.Services
             return responseModel;
         }
 
-        public async Task<Movie> GetByIdAsync(Guid id, bool isAdmin, string userId = null,
+        public async Task<Movie> GetByIdAsync(Guid id, bool isAdmin, string userId = null!,
             CancellationToken token = default)
         {
             try
             {
                 var movie = await _movieRepository.GetByIdAsync(id, isAdmin, userId, token);
-                var avgUserRating = await _ratingRepository.GetAvgUserMovieRatingAsync(movie.Id);
+                var avgUserRating = await _ratingRepository.GetAvgUserMovieRatingAsync(movie.Id, token);
                 movie.UserRating = avgUserRating;
-                _logger.LogInformation("Successfully retrieved titles by ID: {Id}", id);
+                _logger.LogInformation("Successfully retrieved title by ID: {Id}", id);
                 return movie;
             }
             catch (Exception ex)
@@ -142,16 +145,17 @@ namespace Movies.Application.Services
         }
 
         public async Task<IEnumerable<Movie>> GetAllAsync(GetAllMoviesOptions options, bool isFavourite, bool isAdmin,
-            string userId = null, CancellationToken token = default)
+            string userId = null!, CancellationToken token = default)
         {
             await _optionsValidator.ValidateAndThrowAsync(options, token);
 
             try
             {
                 var movies = await _movieRepository.GetAllAsync(options, isAdmin, userId, token);
+
                 foreach (var item in movies)
                 {
-                    var avgMovieRating = await _ratingRepository.GetAvgUserMovieRatingAsync(item.Id);
+                    var avgMovieRating = await _ratingRepository.GetAvgUserMovieRatingAsync(item.Id, token);
                     item.UserRating = avgMovieRating;
                 }
 
@@ -172,7 +176,7 @@ namespace Movies.Application.Services
         }
 
         public async Task<ResponseModel<IEnumerable<Movie>>> GetTopMovieAsync(bool isAdmin = false,
-            string userId = null, CancellationToken token = default)
+            string userId = null!, CancellationToken token = default)
         {
             var response = new ResponseModel<IEnumerable<Movie>>
             {
@@ -183,9 +187,10 @@ namespace Movies.Application.Services
             try
             {
                 var movieList = await _movieRepository.GetTopMovieAsync(isAdmin, userId, token);
+
                 foreach (var item in movieList)
                 {
-                    var avgMovieRating = await _ratingRepository.GetAvgUserMovieRatingAsync(item.Id);
+                    var avgMovieRating = await _ratingRepository.GetAvgUserMovieRatingAsync(item.Id, token);
                     item.UserRating = avgMovieRating;
                 }
 
@@ -202,15 +207,16 @@ namespace Movies.Application.Services
             return response;
         }
 
-        public async Task<IEnumerable<Movie>> GetMostRecentMovieAsync(bool isAdmin = false, string userId = null,
+        public async Task<IEnumerable<Movie>> GetMostRecentMovieAsync(bool isAdmin = false, string userId = null!,
             CancellationToken token = default)
         {
             try
             {
                 var movies = await _movieRepository.GetMostRecentMovieAsync(isAdmin, userId, token);
+
                 foreach (var item in movies)
                 {
-                    var avgMovieRating = await _ratingRepository.GetAvgUserMovieRatingAsync(item.Id);
+                    var avgMovieRating = await _ratingRepository.GetAvgUserMovieRatingAsync(item.Id, token);
                     item.UserRating = avgMovieRating;
                 }
 
@@ -224,28 +230,50 @@ namespace Movies.Application.Services
             }
         }
 
-        public async Task<Movie> UpdateAsync(Movie movie, Guid? userId = default, CancellationToken token = default)
+        public async Task<ResponseModel<Movie>> UpdateAsync(Movie movie, Guid? userId = default, CancellationToken token = default)
         {
+            var response = new ResponseModel<Movie>
+            {
+                Title = "Oops! Something went wrong. Please try again.",
+                Success = false
+            };
+
             try
             {
-                var movieDetail = await _movieRepository.GetByIdAsync(movie.Id);
+                var movieDetail = await _movieRepository.GetByIdAsync(movie.Id, token: token);
 
                 if (movieDetail == null)
                 {
                     _logger.LogWarning("Title with ID: {Id} does not exist.", movie.Id);
-                    throw new KeyNotFoundException($"Title with ID '{movie.Id}' does not exist.");
+                    response.Title = "Title does not exist.";
+                }
+                else
+                {
+                    movie.Title = movieDetail.Title;
+                    movie.Released = movieDetail.Released;
+                    movie.YearOfRelease = movieDetail.YearOfRelease;
+
+                    await _movieValidator.ValidateAndThrowAsync(movie, cancellationToken: token);
+
+                    var isUpdated = await _movieRepository.UpdateAsync(movie, token);
+
+                    if (isUpdated)
+                    {
+                        _logger.LogInformation("Successfully updated title: {Title} (ID: {Id})", movie.Id);
+                        var updatedMovie = await _movieRepository.GetByIdAsync(movie.Id, token: token);
+                        response.Title = "Successfully updated title.";
+                        response.Success = true;
+                        response.Content = updatedMovie;
+                    }
                 }
 
-                movieDetail.UpdatedAt = DateTime.UtcNow;
-                movieDetail.Plot = movie.Plot;
-
-                await _movieRepository.UpdateAsync(movieDetail, token);
-                _logger.LogInformation("Successfully updated title: {Title} (ID: {Id})", movieDetail.Title, movie.Id);
-
-                return movieDetail;
+                return response;
             }
+
             catch (Exception ex)
             {
+                response.Success = false;
+                response.Title = ex.Message;
                 _logger.LogError(ex, "An error occurred while updating title: {Title}");
                 throw;
             }
@@ -289,13 +317,13 @@ namespace Movies.Application.Services
             }
         }
 
-        public async Task<IEnumerable<Movie>> GetSearchedMoviesAsync(string? textToSearchMovies)
+        public async Task<IEnumerable<Movie>> GetSearchedMoviesAsync(string? textToSearchMovie)
         {
             try
             {
-                var moviesData = await _movieRepository.GetSearchedMoviesAsync(textToSearchMovies);
-                _logger.LogInformation($"Successfully retrieved titles with searchText: {textToSearchMovies}",
-                    textToSearchMovies);
+                var moviesData = await _movieRepository.GetSearchedMoviesAsync(textToSearchMovie);
+                _logger.LogInformation($"Successfully retrieved titles with searchText: {textToSearchMovie}",
+                    textToSearchMovie);
                 return moviesData;
             }
             catch (Exception ex)

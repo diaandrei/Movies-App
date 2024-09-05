@@ -16,13 +16,15 @@ namespace Movies.Api.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _config;
+        private readonly TokenGenerator _tokenGenerator;
         public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-            RoleManager<IdentityRole> roleManager, IConfiguration config)
+            RoleManager<IdentityRole> roleManager, IConfiguration config, TokenGenerator tokenGenerator)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _config = config;
+            _tokenGenerator = tokenGenerator;
         }
 
         [HttpPost(ApiEndpoints.Movies.Register)]
@@ -104,7 +106,7 @@ namespace Movies.Api.Controllers
                     var user = await _userManager.FindByEmailAsync(model.Email);
                     if (user != null)
                     {
-                        var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, false, false);
+                        var result = await _signInManager.PasswordSignInAsync(user.UserName!, model.Password, false, false);
 
                         if (result.Succeeded)
                         {
@@ -123,18 +125,19 @@ namespace Movies.Api.Controllers
                             {
                                 UserId = user.Id,
                                 Email = model.Email,
-                                RoleId = roleId,
+                                RoleId = roleId!,
                                 IsTrustedMember = user.IsTrustedMember,
                                 IsAdmin = user.IsAdmin,
                             };
 
-                            var token = TokenGenerator.GenerateToken(jwtReq);
+                            var token = _tokenGenerator.GenerateToken(jwtReq);
+
                             LoginDto login = new LoginDto
                             {
                                 Token = token,
                                 IsAdmin = user.IsAdmin,
                                 Name = user.FirstName + " " + user.LastName,
-                                Email = user.Email
+                                Email = user.Email!
                             };
                             response.Content = login;
                             response.Success = true;
@@ -147,7 +150,7 @@ namespace Movies.Api.Controllers
                     }
                     else
                     {
-                        response.Title = "User not found. Please check your details and try again.";
+                        response.Title = "Invalid email or password. Please try again.";
                     }
                 }
                 else

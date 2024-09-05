@@ -7,12 +7,15 @@ namespace Movies.Application.Services
 {
     public class OmdbService : IOmdbService
     {
-        private HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
         private readonly ILogger<OmdbService> _logger;
+        private readonly string _apiKey;
 
-        public OmdbService(ILogger<OmdbService> logger)
+        public OmdbService(ILogger<OmdbService> logger, HttpClient client, string apiKey)
         {
             _logger = logger;
+            _httpClient = client;
+            _apiKey = apiKey;
         }
 
         public async Task<ResponseModel<OmdbResponse>> GetMovieAsync(string title, string year, CancellationToken token)
@@ -22,31 +25,32 @@ namespace Movies.Application.Services
                 Title = "Something went wrong.",
                 Success = false
             };
-            using (_httpClient = new HttpClient())
-            {
-                var url = $"http://www.omdbapi.com/?t={title}&y={year}&apikey=b4de2ce9";
-                var response = await _httpClient.GetAsync(url, token);
-                if (!response.IsSuccessStatusCode)
-                {
-                    _logger.LogError("Failed to get title from OMDB API. Status code: {StatusCode}", response.StatusCode);
-                    return null;
-                }
-                var content = await response.Content.ReadAsStringAsync();
-                var omdbResponse = JsonSerializer.Deserialize<OmdbResponse>(content);
-                if (omdbResponse.Title != null)
-                {
-                    res.Content = omdbResponse;
-                    res.Title = "Title successfully retrieved from OMDB.";
-                    res.Success = true;
-                }
-                else
-                {
-                    res.Title = "The title does not exist.";
-                    res.Success = false;
-                }
 
-                return res;
+            var url = $"http://www.omdbapi.com/?t={title}&y={year}&apikey={_apiKey}";
+            var response = await _httpClient.GetAsync(url, token);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Failed to get title from OMDB API. Status code: {StatusCode}", response.StatusCode);
+                return null!;
             }
+
+            var content = await response.Content.ReadAsStringAsync(token);
+            var omdbResponse = JsonSerializer.Deserialize<OmdbResponse>(content);
+
+            if (omdbResponse.Title != null)
+            {
+                res.Content = omdbResponse;
+                res.Title = "Title successfully retrieved from OMDB.";
+                res.Success = true;
+            }
+            else
+            {
+                res.Title = "The title does not exist.";
+                res.Success = false;
+            }
+
+            return res;
         }
     }
 }

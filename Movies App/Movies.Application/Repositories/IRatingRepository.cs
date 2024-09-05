@@ -5,6 +5,7 @@ namespace Movies.Application.Repositories
     public interface IRatingRepository
     {
         Task<bool> RateMovieAsync(MovieRating movieRating, CancellationToken token = default);
+        Task<string> MovieRatedAsync(Guid Id, Guid movieId, string userId, CancellationToken token = default);
         Task<bool> IsMovieRatedAsync(Guid movieId, string userId, CancellationToken token = default);
         Task<bool> UpdateMovieRatedAsync(MovieRating movieRating, CancellationToken token = default);
         Task<decimal> GetRatingAsync(Guid movieId, CancellationToken token = default);

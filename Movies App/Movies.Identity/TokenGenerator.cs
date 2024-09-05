@@ -6,25 +6,30 @@ using System.Text.Json;
 
 namespace Movies.Identity
 {
-    public static class TokenGenerator
+    public class TokenGenerator
     {
-        private const string TokenSecret = "MySuperSecretKeyHere1234567890IneedToStoreThisSecurely";
-        private static readonly TimeSpan TokenLifetime = TimeSpan.FromDays(365);
-        public static string GenerateToken(TokenGenerationRequest request)
+        private readonly JwtConfigurationService _jwtConfig;
+
+        public TokenGenerator(JwtConfigurationService jwtConfig)
+        {
+            _jwtConfig = jwtConfig;
+        }
+
+        public string GenerateToken(TokenGenerationRequest request)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(TokenSecret);
+            var key = Encoding.UTF8.GetBytes(_jwtConfig.TokenSecret);
 
             var claims = new List<Claim>
-        {
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(JwtRegisteredClaimNames.Sub, request.Email),
-            new(JwtRegisteredClaimNames.Email, request.Email),
-            new("userId", request.UserId.ToString()),
-            new("roleId", request.RoleId),
-            new("isTrustedMember", request.IsTrustedMember.ToString()),
-            new("isAdmin", request.IsAdmin.ToString()),
-        };
+            {
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new(JwtRegisteredClaimNames.Sub, request.Email),
+                new(JwtRegisteredClaimNames.Email, request.Email),
+                new("userId", request.UserId.ToString()),
+                new("roleId", request.RoleId),
+                new("isTrustedMember", request.IsTrustedMember.ToString()),
+                new("isAdmin", request.IsAdmin.ToString()),
+            };
 
             foreach (var claimPair in request.CustomClaims)
             {
@@ -44,16 +49,15 @@ namespace Movies.Identity
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.Add(TokenLifetime),
-                Issuer = "https://id.test.com",
-                Audience = "https://movies.test.com",
+                Expires = DateTime.UtcNow.Add(TimeSpan.FromDays(365)),
+                Issuer = _jwtConfig.Issuer,
+                Audience = _jwtConfig.Audience,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            var jwt = tokenHandler.WriteToken(token);
-            return jwt;
+            return tokenHandler.WriteToken(token);
         }
     }
 }
