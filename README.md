@@ -72,7 +72,7 @@ You can test the live application here: [Movies App](https://moviesfrontend.azur
 
 ---
 
-## Contributing fd
+## Contributing
 
 Contributions are welcome! To contribute:
 1. Fork the repository.
