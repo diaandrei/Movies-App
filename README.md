@@ -62,7 +62,7 @@ Make sure you have the following installed on your system:
 - **Database**: SQL Server with Entity Framework
 - **Authentication**: JWT Tokens
 - **Testing**: nUnit, Moq
-- **Architecture**: Layered Architecture dds
+- **Architecture**: Layered Architecture
 
 ---
 
