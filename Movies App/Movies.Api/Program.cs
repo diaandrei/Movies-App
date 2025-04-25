@@ -152,8 +152,8 @@ public class Program
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
-        app.UseRouting();
         app.UseCors("AllowOrigin");
+        app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseSwagger();
